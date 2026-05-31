@@ -1,21 +1,23 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.Category;
+using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
-
 namespace Core_Layer.Repository.Category;
 
-public class CategoryRepo(Context context,IMapper mapper) :ICategoryRepo
+public class CategoryRepo(Context context,IMapper mapper,TextServices textServices) :ICategoryRepo
 {
-    public async Task<ActionResult> AddAsync(string name)
+    public async Task<ActionResult> AddAsync(AddCategoryDto dto)
     {
         try
         {
-            if (await context.Categories.AnyAsync(e=>e.Name == name))
+            if (await context.Categories.AnyAsync(e=>e.Name == dto.Name))
                 return ActionResult.Failed("همچین دسته بندی ای وجود دارد");
-            
-            await context.Categories.AddAsync(new Data_Layer.Entities.Category() { Name = name });
+
+            var category = mapper.Map<Data_Layer.Entities.Category>(dto);
+            category.Slug = textServices.GenerateSlug(category.Name);
+            await context.Categories.AddAsync(category);
             await context.SaveChangesAsync();
             return ActionResult.Completed();
         }
@@ -41,6 +43,27 @@ public class CategoryRepo(Context context,IMapper mapper) :ICategoryRepo
             return ActionResult.Failed(e.Message);
         }
         
+    }
+
+    public async Task<ActionResult> UpdateAsync(UpdateCategoryDto dto)
+    {
+        try
+        {
+            var category = await GetCategoryByIdAsync(dto.Id);
+            if (category == null)
+              return  ActionResult.Failed("دسته بندی پیدا نشد دوباره امتحان کنید");
+
+            category.Name = dto.Name ?? category.Name;
+            category.Slug = textServices.GenerateSlug(category.Name);
+            category.Keywords = dto.Keywords ?? category.Keywords;
+            category.MetaDescription = dto.MetaDescription ?? category.MetaDescription;
+            await context.SaveChangesAsync();
+            return ActionResult.Completed();
+        }
+        catch (Exception e)
+        {
+            return ActionResult.Failed(e.Message);
+        }
     }
 
     public async Task<List<CategoryDto>> GetCategoriesAsync()

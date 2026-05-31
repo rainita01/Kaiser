@@ -5,6 +5,7 @@ using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
+using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,7 @@ builder.Services.AddDbContext<Context>(e =>
 #region Services
 
 builder.Services.AddScoped<ImageServices>();
+builder.Services.AddScoped<TextServices>();
 
 #endregion
 #region Repositories

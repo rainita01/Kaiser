@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Visitors;
+using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core_Layer.Repository.Product;
 
-public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo) : IProductRepo
+public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo,TextServices textServices) : IProductRepo
 {
     public async Task<ActionResult> AddAsync(AddProductDto dto)
     {
@@ -21,7 +23,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
                 await imageRepo.AddAsync(image);
             }
 
-            model.Slug = GenerateSlug(dto.Name);
+            model.Slug = textServices.GenerateSlug(dto.Name);
             await context.AddAsync(model);
             await context.SaveChangesAsync();
             return ActionResult.Completed();
@@ -36,6 +38,21 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
     {
         try
         {
+            var product = await GetProduct(dto.Id);
+            if (product == null)
+                return ActionResult.Failed("محصول پیدا نشد!");
+
+
+            product.Name = dto.Name ?? product.Name;
+            product.Slug = textServices.GenerateSlug(product.Name);
+            product.Description = dto.Description ?? product.Description;
+            product.MetaDescription = dto.MetaDescription ?? product.MetaDescription;
+            product.KeyWords = dto.KeyWords ?? product.KeyWords;
+
+            
+            product.Price = dto.Price ?? product.Price;
+            product.StockQuantity = dto.StockQuantity ?? product.StockQuantity;
+            await context.SaveChangesAsync();
             return ActionResult.Completed();
         }
         catch (Exception e)
@@ -62,19 +79,36 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         }
     }
 
-    public Task<List<ProductDto>> GetProductPagesAsync(int pageNumber)
+    public async Task<List<ProductDto>> GetProductPagesAsync(int pageNumber)
     {
-        throw new NotImplementedException();
+        return await context.Products
+            .AsNoTracking()
+            .Skip((pageNumber - 1) * 10)
+            .Take(10)
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
-    public Task<List<ProductDto>> GetProductPagesAsync(int pageNumber, int categoryId)
+    public async Task<List<ProductDto>> GetProductPagesAsync(int pageNumber, int? categoryId)
     {
-        throw new NotImplementedException();
+        return await context.Products
+            .AsNoTracking()
+            .Where(e => e.CategoryId == categoryId)
+            .Skip((pageNumber - 1) * 10)
+            .Take(10)
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
-    public Task<List<ProductDto>> GetProductPagesAsync(int pageNumber, string search)
+    public async Task<List<ProductDto>> GetProductPagesAsync(int pageNumber, string search)
     {
-        throw new NotImplementedException();
+        return await context.Products
+            .AsNoTracking()
+            .Where(e => e.Name.Contains(search))
+            .Skip((pageNumber - 1) * 10)
+            .Take(10)
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
     }
 
     public async Task<ProductDto> GetProductAsync(int id)
@@ -91,26 +125,5 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
     {
         return await context.Products.FirstOrDefaultAsync(e => e.Id == id);
     }
-    private string GenerateSlug(string title)
-    {
-        if (string.IsNullOrEmpty(title))
-            return "";
-
-        // تبدیل به حروف کوچک
-        var slug = title.ToLower();
-
-        // جایگزینی فاصله با خط تیره
-        slug = slug.Replace(" ", "-");
-
-        // حذف کاراکترهای خاص
-        slug = slug
-            .Replace("?", "")
-            .Replace("!", "")
-            .Replace("،", "")
-            .Replace(".", "")
-            .Replace(":", "")
-            .Replace(";", "");
-
-        return slug;
-    }
+  
 }
