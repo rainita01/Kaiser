@@ -1,0 +1,6 @@
+@Kaiser_HostAddress = http://localhost:5184
+
+GET {{Kaiser_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
