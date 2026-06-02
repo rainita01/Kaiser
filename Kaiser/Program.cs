@@ -52,7 +52,9 @@ builder.Services.AddAutoMapper(mapp =>
 #endregion
 builder.Services.AddIdentity<User, Role>(option =>
     {
-
+        option.SignIn.RequireConfirmedAccount = false;
+        option.SignIn.RequireConfirmedEmail = false;
+        option.SignIn.RequireConfirmedPhoneNumber = false;
         option.User.RequireUniqueEmail = false;
         option.Password.RequireUppercase = false;
         option.Password.RequireNonAlphanumeric = false;

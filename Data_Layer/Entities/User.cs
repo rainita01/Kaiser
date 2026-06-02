@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Data_Layer.Entities;
 
-public class User :IdentityUser<string>
+public class User :IdentityUser
 {
     [PersonalData]
     [MaxLength(250)]
