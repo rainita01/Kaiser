@@ -62,7 +62,22 @@ builder.Services.AddIdentity<User, Role>(option =>
     .AddEntityFrameworkStores<Context>()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<IdentityErrorsToPersian>();
-var app = builder.Build();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+     
+        policy.WithOrigins("http://localhost:3000")  
+            .AllowAnyHeader()                      
+            .AllowAnyMethod()                   
+            .AllowCredentials();                   
+    });
+});
+
+
+var app = builder.Build(); 
+app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) 
@@ -70,6 +85,7 @@ if (app.Environment.IsDevelopment())
     //app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 
 }
 
