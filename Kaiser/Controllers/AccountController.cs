@@ -1,4 +1,5 @@
-﻿using Core_Layer.Dtos.AccountDto;
+﻿using System.Security.Claims;
+using Core_Layer.Dtos.AccountDto;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -46,5 +47,70 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
     {
        await signInManager.SignOutAsync();
         return base.SignOut();  
+    }
+
+    [HttpGet("UserManager")]
+    public IActionResult UserManager()
+    {
+        var users = userManager.Users.Select(e => new UserDto()
+        {
+            Id = e.Id,
+            Firstname = e.FirstName,
+            Lastname = e.LastName,
+            Username = e.UserName,
+        }).ToList();
+        return Ok(users);
+    }
+
+    [HttpDelete("UserManager/Remove")]
+    public async Task<IActionResult> Remove([FromQuery] string id)
+    {
+        var user = await userManager.FindByIdAsync(id);
+        if (user == null)
+            return BadRequest("کاربر پیدا نشد");
+        var result = await userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            return Ok();
+        }
+        else
+        {
+            return BadRequest(result.Errors);
+        }
+    }
+    [HttpGet("UserManager/Edit")]
+    public async Task<IActionResult> Edit([FromQuery] string id)
+    {
+        var user = await userManager.FindByIdAsync(id);
+        if (user == null)
+            return BadRequest("کاربر پیدا نشد");
+        var userDto = new UserDto()
+        {
+            Id = user.Id,
+            Firstname = user.FirstName,
+            Lastname = user.LastName,
+            Username = user.UserName
+        };
+        return Ok(userDto);
+    }
+
+    [HttpPut("UserManager/Edit")]
+    public async Task<IActionResult> Edit([FromBody] UserDto dto)
+    {
+        var user = await userManager.FindByIdAsync(dto.Id);
+        if (user == null)
+            return BadRequest("کاربر پیدا نشد");
+        user.FirstName = dto.Firstname ?? user.FirstName;
+        user.LastName = dto.Lastname ?? user.LastName;
+        user.UserName = dto.Username ?? user.UserName;
+        var result = await userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return Ok();
+        }
+        else
+        {
+            return BadRequest(result.Errors);
+        }
     }
 }
