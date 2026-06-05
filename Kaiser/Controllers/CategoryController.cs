@@ -14,7 +14,7 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
         return Ok(categories);
     }
     [HttpPost("CategoryManager/add")]
-    public async Task<IActionResult> AddCategory(AddCategoryDto dto)
+    public async Task<IActionResult> AddCategory([FromBody] AddCategoryDto dto)
     {
         var result = await categoryRepo.AddAsync(dto);
         if (result.Success)
@@ -40,7 +40,7 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
         }
     }
     [HttpPut("CategoryManager/Update")]
-    public async Task<IActionResult> UpdateCategory(UpdateCategoryDto dto)
+    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryDto dto)
     {
         var result = await categoryRepo.UpdateAsync(dto);
         if (result.Success)

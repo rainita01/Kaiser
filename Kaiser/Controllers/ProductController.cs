@@ -37,8 +37,8 @@ public class ProductController(IProductRepo productRepo) : ControllerBase
         return Ok(product);
     }
     [HttpPost("ProductManager/add")]
-    public async Task<IActionResult> AddProduct(AddProductDto dto)
-    {
+    public async Task<IActionResult> AddProduct([FromBody] AddProductDto dto)
+    {   
         var result = await productRepo.AddAsync(dto);
         if (result.Success)
         {
@@ -58,7 +58,7 @@ public class ProductController(IProductRepo productRepo) : ControllerBase
     }
 
     [HttpPut("ProductManager/EditProduct")]
-    public async Task<IActionResult> Update(UpdateProductDto dto)
+    public async Task<IActionResult> Edit([FromBody]UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
 
@@ -69,11 +69,6 @@ public class ProductController(IProductRepo productRepo) : ControllerBase
         return BadRequest();
     }
 
-    //[HttpGet("ProductManager/EditProduct")]
-    //public async Task<IActionResult> Update()
-    //{
-
-    //    return Ok();
-    //}
+    
 
 }

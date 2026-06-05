@@ -9,7 +9,7 @@ namespace Kaiser.Controllers;
 public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager) : ControllerBase
 {
     [HttpPost("/Account/Login")]
-    public async Task<IActionResult> Login(LoginUserDto dto)
+    public async Task<IActionResult> Login([FromBody]LoginUserDto dto)
     {
         var result = await signInManager.PasswordSignInAsync(dto.Username, dto.Password, dto.IsPersistent, false);
         if (result.Succeeded)
@@ -22,7 +22,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         }
     }
     [HttpPost("Account/Register")]
-    public async Task<IActionResult> Register(RegisterUserDto dto)
+    public async Task<IActionResult> Register([FromBody]RegisterUserDto dto)
     {
         var result = await userManager.CreateAsync(new User()
         {
@@ -63,7 +63,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
     }
 
     [HttpDelete("UserManager/Remove")]
-    public async Task<IActionResult> Remove([FromQuery] string id)
+    public async Task<IActionResult> Remove([FromBody] string id)
     {
         var user = await userManager.FindByIdAsync(id);
         if (user == null)
