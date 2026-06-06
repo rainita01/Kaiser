@@ -6,22 +6,18 @@ using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core_Layer.Repository.Product;
 
 public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo,TextServices textServices) : IProductRepo
 {
-    public async Task<ActionResult> AddAsync(AddProductDto dto)
+    public async Task<ActionResult> AddAsync([FromBody] AddProductDto dto)
     {
         try
         {
             var model = mapper.Map<Data_Layer.Entities.Product>(dto);
-            var images = new List<Data_Layer.Entities.Image>();
-            foreach (var image in dto.Images)
-            {
-                await imageRepo.AddAsync(image);
-            }
 
             model.Slug = textServices.GenerateSlug(dto.Name);
             await context.AddAsync(model);
