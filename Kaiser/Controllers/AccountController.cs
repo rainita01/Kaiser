@@ -73,10 +73,8 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         {
             return Ok();
         }
-        else
-        {
-            return BadRequest(result.Errors);
-        }
+        return BadRequest(result.Errors);
+     
     }
     [HttpGet("UserManager/Edit")]
     public async Task<IActionResult> Edit([FromQuery] string id)

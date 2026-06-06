@@ -6,6 +6,7 @@ using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
+using Data_Layer.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,19 +14,36 @@ namespace Core_Layer.Repository.Product;
 
 public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo,TextServices textServices) : IProductRepo
 {
-    public async Task<ActionResult> AddAsync([FromBody] AddProductDto dto)
+    public async Task<ActionResult> AddAsync(AddProductDto dto)
     {
+        using var transaction = await context.Database.BeginTransactionAsync();
+
         try
         {
             var model = mapper.Map<Data_Layer.Entities.Product>(dto);
-
             model.Slug = textServices.GenerateSlug(dto.Name);
-            await context.AddAsync(model);
+
+            await context.Products.AddAsync(model);
+            await context.SaveChangesAsync(); // model.Id ساخته شد
+
+            foreach (var image in dto.Images)
+            {
+               
+               var result = await imageRepo.AddAsync(image,model.Id);
+               if (!result.Success )
+               {
+                   return ActionResult.Failed(result.Message);
+               }
+            }
+
             await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
             return ActionResult.Completed();
         }
         catch (Exception e)
         {
+            await transaction.RollbackAsync();
             return ActionResult.Failed(e.Message);
         }
     }
@@ -75,36 +93,57 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         }
     }
 
-    public async Task<List<ProductDto>> GetProductPagesAsync(int pageNumber)
+    public async Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber)
     {
-        return await context.Products
+        var products = await context.Products
             .AsNoTracking()
             .Skip((pageNumber - 1) * 10)
             .Take(10)
-            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
             .ToListAsync();
+        for (int i = 0; i < products.Count; i++)
+        {
+            products[i].Image = await imageRepo.GetFirstImageAsync(products[i].Id);
+            products[i].Views = await viewsRepo.GetPageViewsCount(products[i].Id);
+        }
+
+        return products;
     }
 
-    public async Task<List<ProductDto>> GetProductPagesAsync(int pageNumber, int? categoryId)
+    public async Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber, int? categoryId)
     {
-        return await context.Products
+        var products = await context.Products
             .AsNoTracking()
             .Where(e => e.CategoryId == categoryId)
             .Skip((pageNumber - 1) * 10)
             .Take(10)
-            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
             .ToListAsync();
+        for (int i = 0; i < products.Count; i++)
+        {
+            products[i].Image = await imageRepo.GetFirstImageAsync(products[i].Id);
+            products[i].Views = await viewsRepo.GetPageViewsCount(products[i].Id);
+        }
+
+        return products;
     }
 
-    public async Task<List<ProductDto>> GetProductPagesAsync(int pageNumber, string search)
+    public async Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber, string search)
     {
-        return await context.Products
+        var products = await context.Products
             .AsNoTracking()
             .Where(e => e.Name.Contains(search))
             .Skip((pageNumber - 1) * 10)
             .Take(10)
-            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
             .ToListAsync();
+        for (int i = 0; i < products.Count; i++)
+        {
+            products[i].Image = await imageRepo.GetFirstImageAsync(products[i].Id);
+            products[i].Views = await viewsRepo.GetPageViewsCount(products[i].Id);
+        }
+
+        return products;
     }
 
     public async Task<ProductDto> GetProductAsync(int id)

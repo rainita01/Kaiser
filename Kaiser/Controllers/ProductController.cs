@@ -6,15 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
-public class ProductController(IProductRepo productRepo,IImageRepo imageRepo) : ControllerBase
+public class ProductController(IProductRepo productRepo) : ControllerBase
 {
     [HttpGet("Products")]
-    public async Task<IActionResult> GetProducts(
-        [FromQuery] string? search = null,
-        [FromQuery] int? categoryId = null,
-        [FromQuery] int pageNumber = 1)
+    public async Task<IActionResult> GetProducts([FromQuery] string? search = null, [FromQuery] int? categoryId = null, [FromQuery] int pageNumber = 1)
     {
-        List<ProductDto> products;
+        List<ProductCardDto> products;
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -31,33 +28,6 @@ public class ProductController(IProductRepo productRepo,IImageRepo imageRepo) : 
 
         return Ok(products);
     }
-    [HttpPost("ProductManager/AddImage")]
-    public async Task<IActionResult> AddImage(List<AddImageDto> images)
-    {
-        foreach (var addImageDto in images)
-        {
-            var result = await imageRepo.AddAsync(addImageDto);
-
-            if (!result.Success)
-            {
-                return BadRequest($"عکس {addImageDto.Image.FileName} اضافه نشد");
-            }
-        }
-
-        return Ok();
-    }
-    [HttpDelete("ProductManager/RemoveImage")]
-    public async Task<IActionResult> RemoveImage(int id)
-    {
-        var result = await imageRepo.RemoveAsync(id);
-        if (result.Success)
-        {
-            return Ok();
-        }
-
-        return BadRequest(result.Message);
-    }
-
 
     [HttpGet("Products/Detail/{id}/{slug}")]
     public async Task<IActionResult> ProductDetail(int id, string slug)
@@ -66,7 +36,7 @@ public class ProductController(IProductRepo productRepo,IImageRepo imageRepo) : 
         return Ok(product);
     }
     [HttpPost("ProductManager/add")]
-    public async Task<IActionResult> AddProduct( AddProductDto dto)
+    public async Task<IActionResult> AddProduct(AddProductDto dto)
     {   
         var result = await productRepo.AddAsync(dto);
         if (result.Success)
@@ -87,7 +57,7 @@ public class ProductController(IProductRepo productRepo,IImageRepo imageRepo) : 
     }
 
     [HttpPut("ProductManager/EditProduct")]
-    public async Task<IActionResult> Edit([FromBody]UpdateProductDto dto)
+    public async Task<IActionResult> Edit(UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
 

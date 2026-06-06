@@ -11,6 +11,6 @@ public class AddProductDto
     public long Price { get; set; }
     public int StockQuantity { get; set; }
     public int CategoryId { get; set; }
-   
+    public List<AddImageDto> Images { get; set; }   
 
 }
