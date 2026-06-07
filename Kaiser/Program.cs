@@ -93,11 +93,7 @@ app.UseStaticFiles(new StaticFileOptions()
     FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath,"Uploads")),
     RequestPath = "/uploads"
 });
-<<<<<<< HEAD
-// app.UseHttpsRedirection();
-=======
-//app.UseHttpsRedirection();
->>>>>>> 5dcb7aab93bb0703b1d8b175bb443ee8d08ac0b4
+
 
 app.UseAuthorization();
 
