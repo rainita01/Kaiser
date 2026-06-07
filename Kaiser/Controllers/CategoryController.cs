@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
+[ApiController]
 public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
 {
 

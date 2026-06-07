@@ -1,4 +1,6 @@
-﻿using Core_Layer.Dtos.ImageDto;
+﻿using System.Reflection;
+using System.Text.Json.Serialization;
+using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Dtos.ViewsDto;
 using Core_Layer.Repository.Image;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
+[ApiController]
 public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : ControllerBase
 {
     [HttpGet("Products")]
