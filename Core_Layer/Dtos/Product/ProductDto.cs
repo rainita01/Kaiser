@@ -15,6 +15,8 @@ public class ProductDto
     public int StockQuantity { get; set; }
     public int CategoryId { get; set; }
     public long Views { get; set; }
+    public int DiscountPercent { get; set; }
+    public bool IsBestSell { get; set; }
     public List<ImageDto.ImageDto> Images { get; set; }
     
 }

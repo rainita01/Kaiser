@@ -11,5 +11,7 @@ public class UpdateProductDto
     public string? KeyWords { get; set; }
     public long? Price { get; set; }
     public int? StockQuantity { get; set; }
+    public int? DiscountPercent { get; set; }
+    public bool? IsBestSell { get; set; }
     public List<AddImageDto>? Images { get; set; }
 }

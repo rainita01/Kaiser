@@ -22,7 +22,9 @@ public class Product : BaseEntity
     public long Price { get; set; }
     [Required]
     public int StockQuantity { get; set; }
-    
+    public int DiscountPercent { get; set; }
+    public bool IsBestSell { get; set; }
+
 
     #region Relations
 

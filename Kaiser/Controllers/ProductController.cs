@@ -40,7 +40,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
         {
             ProductId = id,
             ViewAt = DateTime.Now,
-            SesstionId = HttpContext.Session.Id,
+            SesstionId = Guid.NewGuid().ToString(),
             IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
         });
         return Ok(product);

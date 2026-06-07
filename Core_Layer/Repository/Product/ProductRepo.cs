@@ -62,8 +62,8 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             product.Description = dto.Description ?? product.Description;
             product.MetaDescription = dto.MetaDescription ?? product.MetaDescription;
             product.KeyWords = dto.KeyWords ?? product.KeyWords;
-
-            
+            product.DiscountPercent = dto.DiscountPercent ?? product.DiscountPercent;
+            product.IsBestSell = dto.IsBestSell ?? product.IsBestSell;
             product.Price = dto.Price ?? product.Price;
             product.StockQuantity = dto.StockQuantity ?? product.StockQuantity;
             await context.SaveChangesAsync();
