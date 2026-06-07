@@ -27,7 +27,7 @@ public class Product : BaseEntity
     #region Relations
 
     public List<ProductView>? ProductViews { get; set; } 
-    public List<Image> Images { get; set; } 
+    public List<Image>? Images { get; set; } 
     public int CategoryId { get; set; }
     public Category Category { get; set; }
 

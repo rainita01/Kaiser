@@ -26,7 +26,7 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
         }
     }
 
-    public async Task<ActionResult> AddAsync(AddImageDto image)
+    public async Task<ActionResult> AddAsync(AddImageDto image,int productId)
     {
        
         try
@@ -36,9 +36,7 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
                 return ActionResult.Failed("فایل پسوند عکس ندارد...");
             }
             var imageName = await imageServices.SaveImageAndGiveName(image.Image);
-            await context.Images.AddAsync(new Data_Layer.Entities.Image()
-                { IsMain = image.IsMain, Name = imageName, ProductId = image.ProductId });
-            await context.SaveChangesAsync();
+            await context.Images.AddAsync(new Data_Layer.Entities.Image() {  Name = imageName, ProductId = productId });
             return ActionResult.Completed();
         }
         catch (Exception e)
@@ -54,6 +52,11 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
 
     }
 
+    public async Task<ImageDto> GetFirstImageAsync(int productId)
+    {
+        var image = await context.Images.FirstOrDefaultAsync(e => e.ProductId == productId);
+        return mapper.Map<ImageDto>(image);
+    }
     private async Task<Data_Layer.Entities.Image?> GetImageAsync(int id)
     {
         return await context.Images.FirstOrDefaultAsync(e => e.Id == id);

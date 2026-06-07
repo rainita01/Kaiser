@@ -8,8 +8,6 @@ public class Image
     public int Id { get; set; }
     [MaxLength(250)]
     public string Name { get; set; }
-    public bool IsMain { get; set; } = false;
-
     #region Relations
 
     public int ProductId { get; set; }
