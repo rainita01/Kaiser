@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
+[ApiController]
 public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager) : ControllerBase
 {
     [HttpPost("/Account/Login")]
