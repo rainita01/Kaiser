@@ -25,19 +25,23 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
 
             await context.Products.AddAsync(model);
             await context.SaveChangesAsync(); // model.Id ساخته شد
-
-            foreach (var image in dto.Images)
+            if (dto.Images != null)
             {
-               
-               var result = await imageRepo.AddAsync(image,model.Id);
-               if (!result.Success )
-               {
-                   return ActionResult.Failed(result.Message);
-               }
-            }
+                foreach (var image in dto.Images)
+                {
 
-            await context.SaveChangesAsync();
-            await transaction.CommitAsync();
+                    var result = await imageRepo.AddAsync(image, model.Id);
+                    if (!result.Success)
+                    {
+                        return ActionResult.Failed(result.Message);
+                    }
+                }
+
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            
+
 
             return ActionResult.Completed();
         }

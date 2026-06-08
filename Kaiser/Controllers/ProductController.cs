@@ -49,8 +49,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
         return Ok(product);
     }
     [HttpPost("ProductManager/add")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> AddProduct(AddProductDto dto)
+    public async Task<IActionResult> AddProduct([FromForm]AddProductDto dto)
     {   
         var result = await productRepo.AddAsync(dto);
         if (result.Success)
@@ -71,8 +70,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
     }
 
     [HttpPut("ProductManager/EditProduct")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Edit(UpdateProductDto dto)
+    public async Task<IActionResult> Edit([FromForm]UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
 

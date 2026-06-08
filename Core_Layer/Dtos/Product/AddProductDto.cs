@@ -12,6 +12,6 @@ public class AddProductDto
     public int StockQuantity { get; set; }
     public int CategoryId { get; set; }
     public int DiscountPercent { get; set; }
-    public List<AddImageDto> Images { get; set; }   
+    public List<AddImageDto>? Images { get; set; }   
 
 }
