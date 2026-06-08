@@ -69,6 +69,13 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             product.IsBestSell = dto.IsBestSell ?? product.IsBestSell;
             product.Price = dto.Price ?? product.Price;
             product.StockQuantity = dto.StockQuantity ?? product.StockQuantity;
+            if (dto.Images != null)
+            {
+                foreach (var image in dto.Images)        
+                {
+                    
+                }
+            }
             await context.SaveChangesAsync();
             return ActionResult.Completed();
         }

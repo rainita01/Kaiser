@@ -8,7 +8,8 @@ public class ImageServices(IWebHostEnvironment environment)
 {
     public string[] Extensions
     {
-        get { return new[]{ ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".svg", ".webp", ".ico", ".tiff", ".tif" }; }
+        get { return new[]{ ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".ico",
+            ".tiff", ".tif", ".heic", ".heif", ".avif",".jfif" }; }
     }
 
     public async Task<string> SaveImageAndGiveName(IFormFile image)

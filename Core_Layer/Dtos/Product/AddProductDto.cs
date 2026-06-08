@@ -1,4 +1,5 @@
 ﻿using Core_Layer.Dtos.ImageDto;
+using Microsoft.AspNetCore.Http;
 
 namespace Core_Layer.Dtos.Product;
 
@@ -12,6 +13,6 @@ public class AddProductDto
     public int StockQuantity { get; set; }
     public int CategoryId { get; set; }
     public int DiscountPercent { get; set; }
-    public List<AddImageDto>? Images { get; set; }   
+    public List<IFormFile>? Images { get; set; }   
 
 }

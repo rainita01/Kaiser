@@ -4,6 +4,8 @@ using Core_Layer.Services.ImageServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Data_Layer.Entities;
+using Microsoft.AspNetCore.Http;
+
 namespace Core_Layer.Repository.Image;
 
 public class ImageRepo(Context context,ImageServices imageServices,IMapper mapper) : IImageRepo
@@ -26,16 +28,16 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
         }
     }
 
-    public async Task<ActionResult> AddAsync(AddImageDto image,int productId)
+    public async Task<ActionResult> AddAsync(IFormFile image,int productId)
     {
        
         try
         {
-            if (!imageServices.ValidateExtension(image.Image.FileName))
+            if (!imageServices.ValidateExtension(image.FileName))
             {
                 return ActionResult.Failed("فایل پسوند عکس ندارد...");
             }
-            var imageName = await imageServices.SaveImageAndGiveName(image.Image);
+            var imageName = await imageServices.SaveImageAndGiveName(image);
             await context.Images.AddAsync(new Data_Layer.Entities.Image() {  Name = imageName, ProductId = productId });
             return ActionResult.Completed();
         }
