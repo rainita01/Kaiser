@@ -49,6 +49,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
         return Ok(product);
     }
     [HttpPost("ProductManager/add")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> AddProduct(AddProductDto dto)
     {   
         var result = await productRepo.AddAsync(dto);
@@ -70,6 +71,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
     }
 
     [HttpPut("ProductManager/EditProduct")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Edit(UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
