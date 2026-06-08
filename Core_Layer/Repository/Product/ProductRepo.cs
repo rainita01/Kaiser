@@ -38,11 +38,10 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
                 }
 
                 await context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                
             }
-            
 
-
+            await transaction.CommitAsync();
             return ActionResult.Completed();
         }
         catch (Exception e)

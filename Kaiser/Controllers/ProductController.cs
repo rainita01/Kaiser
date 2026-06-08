@@ -1,9 +1,7 @@
-﻿using System.Reflection;
-using System.Text.Json.Serialization;
-using Core_Layer.Dtos.ImageDto;
+﻿
 using Core_Layer.Dtos.Product;
 using Core_Layer.Dtos.ViewsDto;
-using Core_Layer.Repository.Image;
+
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
 using Microsoft.AspNetCore.Mvc;
