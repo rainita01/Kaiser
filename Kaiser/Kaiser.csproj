@@ -28,8 +28,4 @@
     <ProjectReference Include="..\Data_Layer\Data_Layer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Uploads\" />
-  </ItemGroup>
-
 </Project>
