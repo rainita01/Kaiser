@@ -54,10 +54,10 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
 
     }
 
-    public async Task<ImageDto> GetFirstImageAsync(int productId)
+    public async Task<string?> GetFirstImageAsync(int productId)
     {
-        var image = await context.Images.FirstOrDefaultAsync(e => e.ProductId == productId);
-        return mapper.Map<ImageDto>(image);
+        var image =  await context.Images.FirstOrDefaultAsync(e => e.ProductId == productId);
+        return image?.Name;
     }
     private async Task<Data_Layer.Entities.Image?> GetImageAsync(int id)
     {

@@ -11,5 +11,5 @@ public class ProductCardDto
     public long Views { get; set; }
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
-    public ImageDto.ImageDto Image { get; set; }
+    public string? Image { get; set; }
 }

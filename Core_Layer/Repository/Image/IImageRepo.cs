@@ -8,5 +8,5 @@ public interface IImageRepo
     public Task<ActionResult> RemoveAsync(int id);
     public Task<ActionResult> AddAsync(IFormFile image,int productId);
     public Task<ImageDto> GetByIdAsync(int id);
-    public Task<ImageDto> GetFirstImageAsync(int productId);
+    public Task<string?> GetFirstImageAsync(int productId);
 }
