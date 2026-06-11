@@ -13,5 +13,5 @@ public class UpdateProductDto
     public int? StockQuantity { get; set; }
     public int? DiscountPercent { get; set; }
     public bool? IsBestSell { get; set; }
-    public List<AddImageDto>? Images { get; set; }
+    public List<ImageDto.ImageDto>? Images { get; set; }
 }

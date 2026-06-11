@@ -14,7 +14,7 @@ public class ProductProfile : Profile
         CreateMap<Product, ProductCardDto>()
             .ForMember(e => e.Image, s => s.Ignore())
             .ForMember(e=>e.Views ,s=>s.Ignore());
-
+        CreateMap<Product, UpdateProductDto>();
         CreateMap<Product, ProductDto>()
             .ForMember(e => e.Images, s => s.Ignore())
             .ForMember(e => e.Views, s => s.Ignore());

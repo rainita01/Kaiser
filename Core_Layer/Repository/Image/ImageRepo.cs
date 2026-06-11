@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Transactions;
+using AutoMapper;
 using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Services.ImageServices;
 using Data_Layer.Context;
@@ -18,8 +19,12 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
             if (image == null)
                 return ActionResult.Failed("عکس پیدا نشد...");
             context.Images.Remove(image);
+            var path = Path.Combine(imageServices.ContentRootPath,"Uploads", image.Name);
+            if (File.Exists(path))
+            {
+               File.Delete(path);
+            }
             await context.SaveChangesAsync();
-
             return ActionResult.Completed();
         }
         catch (Exception e)
@@ -30,15 +35,22 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
 
     public async Task<ActionResult> AddAsync(IFormFile image,int productId)
     {
-       
+        using var transaction = Transaction.Current;
+
         try
         {
             if (!imageServices.ValidateExtension(image.FileName))
             {
                 return ActionResult.Failed("فایل پسوند عکس ندارد...");
             }
+
+            if (productId == 0)
+            {
+                return ActionResult.Failed("خطا در پروداکت ای دی");
+            }
             var imageName = await imageServices.SaveImageAndGiveName(image);
             await context.Images.AddAsync(new Data_Layer.Entities.Image() {  Name = imageName, ProductId = productId });
+            await context.SaveChangesAsync();
             return ActionResult.Completed();
         }
         catch (Exception e)

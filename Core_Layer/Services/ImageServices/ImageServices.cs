@@ -6,6 +6,7 @@ namespace Core_Layer.Services.ImageServices;
 
 public class ImageServices(IWebHostEnvironment environment)
 {
+    public string ContentRootPath => environment.ContentRootPath;
     public string[] Extensions
     {
         get { return new[]{ ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".ico",

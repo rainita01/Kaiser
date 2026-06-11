@@ -11,5 +11,7 @@ public interface IProductRepo
     public Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber);
     public Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber, int? categoryId);
     public Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber, string search);
+    public Task<UpdateProductDto>? GetUpdateProductAsync(int id);
     public Task<ProductDto> GetProductAsync(int id);
+
 }

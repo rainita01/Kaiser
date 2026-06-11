@@ -1,7 +1,8 @@
 ﻿
+using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Dtos.ViewsDto;
-
+using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : ControllerBase
+public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IImageRepo imageRepo) : ControllerBase
 {
     [HttpGet("Products")]
     public async Task<IActionResult> GetProducts([FromQuery] string? search = null, [FromQuery] int? categoryId = null, [FromQuery] int pageNumber = 1)
@@ -36,7 +37,6 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
     public async Task<IActionResult> ProductDetail(int id, string slug)
     {
         var product = await productRepo.GetProductAsync(id);
-
         await viewsRepo.AddAsync(new AddViewDto()
         {
             ProductId = id,
@@ -48,13 +48,17 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
     }
     [HttpPost("ProductManager/add")]
     public async Task<IActionResult> AddProduct([FromForm]AddProductDto dto)
-    {   
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("مدل ناقص میباشد ");
+        }
         var result = await productRepo.AddAsync(dto);
         if (result.Success)
         {
-            return Ok();
+            return Created();
         }
-        return BadRequest();
+        return BadRequest(result.Message);
     }
     [HttpDelete("ProductManager/Remove")]
     public async Task<IActionResult> RemoveProduct(int id)
@@ -64,8 +68,20 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
         {
             return Ok();
         }
-        return BadRequest();
+        return BadRequest(result.Message);
     }
+
+    [HttpGet("ProductManager/EditProduct")]
+    public async Task<IActionResult> Edit(int id)
+    {
+        UpdateProductDto? result = await productRepo.GetUpdateProductAsync(id);
+        if (result == null)
+        {
+            return NotFound($"Product with id {id} not found");
+        }
+        return Ok(result);
+    }
+
 
     [HttpPut("ProductManager/EditProduct")]
     public async Task<IActionResult> Edit([FromForm]UpdateProductDto dto)
@@ -76,9 +92,32 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo) : 
         {
             return Ok();
         }
-        return BadRequest();
+
+        return BadRequest(result.Message);
     }
+    [HttpDelete("ProductManager/EditProduct/RemoveImage")]
+    public async Task<IActionResult> DeleteImage(int id)
+    {
+        var result = await imageRepo.RemoveAsync(id);
 
-    
-
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
+    }
+    [HttpPost("ProductManager/EditProduct/AddImage")]
+    public async Task<IActionResult> DeleteImage(AddImageDto dto)
+    {
+        if (dto.ProductId == null )
+        {
+            return BadRequest("ای دی محصول نال میباشد");
+        }
+        var result = await imageRepo.AddAsync(dto.Image, (int)dto.ProductId);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
+    }
 }

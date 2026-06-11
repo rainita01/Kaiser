@@ -166,6 +166,13 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
 
     }
 
+    public async Task<UpdateProductDto>? GetUpdateProductAsync(int id)
+    {
+        var product = await context.Products.Include(e => e.Images).FirstOrDefaultAsync(e => e.Id == id);
+        var productDto = mapper.Map<UpdateProductDto>(product);
+        productDto.Images = mapper.Map<List<ImageDto>>(product.Images);
+        return productDto;
+    }
     private async Task<Data_Layer.Entities.Product?> GetProduct(int id)
     {
         return await context.Products.FirstOrDefaultAsync(e => e.Id == id);
