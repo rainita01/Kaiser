@@ -25,9 +25,35 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
     }
 
-    public Task<ActionResult> UpdateAsync(UpdateAddressDto dto)
+    public async Task<ActionResult> UpdateAsync(UpdateAddressDto dto)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var address = await GetAddressByIdAsync(dto.Id);
+            if (address == null)
+            {
+                return ActionResult.Failed("ادرس پیدا نشد");
+            }
+
+            address.PhoneNumber = dto.PhoneNumber ?? address.PhoneNumber;
+            address.City = dto.City ?? address.City;
+            address.Province = dto.Province ?? address.Province;
+            address.Firstname = dto.Firstname ?? address.Firstname;
+            address.Lastname = dto.Lastname ?? address.Lastname;
+            address.FullAddress = dto.FullAddress ?? address.FullAddress;
+            address.PostCode = dto.PostCode ?? address.PostCode;
+            await context.SaveChangesAsync();
+
+
+            return ActionResult.Completed();
+        }
+        catch (Exception e)
+        {
+            return ActionResult.Failed(e.Message);
+        }
+
+
+
     }
 
     public async Task<ActionResult> DeleteAsync(int id)

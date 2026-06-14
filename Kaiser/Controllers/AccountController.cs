@@ -19,10 +19,9 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         {
             return Ok();
         }
-        else
-        {
-            return BadRequest(result.ToString());
-        }
+       
+        return BadRequest(result.ToString());
+        
     }
     [HttpPost("Account/Register")]
     public async Task<IActionResult> Register([FromBody]RegisterUserDto dto)
@@ -102,12 +101,8 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
  
   
-    [HttpGet("Account/Profile/MyAddresses")]
-    public async Task<IActionResult> MyAddresses([FromQuery] string userId)
-    {
-        var addresses = await addressRepo.GetUserAddresses(userId);
-        return Ok(addresses);
-    }
+
+
     [HttpPut("UserManager/Edit")]
     public async Task<IActionResult> Edit([FromBody] UserDto dto)
     {
@@ -127,6 +122,25 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.Errors);
         
     }
+    [HttpGet("Account/Profile/MyAddresses")]
+    public async Task<IActionResult> MyAddresses([FromQuery] string userId)
+    {
+        var addresses = await addressRepo.GetUserAddresses(userId);
+        return Ok(addresses);
+    }
+    [HttpPut("Account/Profile/EditAddress")]
+    public async Task<IActionResult> Edit([FromBody] UpdateAddressDto dto)
+    {
+        var result = await addressRepo.UpdateAsync(dto);
+        if (result.Success)
+        {
+            return Ok();
+        }
+
+        return BadRequest(result.Message);
+    }
+
+
 
     [HttpDelete("UserManager/Remove")]
     public async Task<IActionResult> Remove([FromBody] string id)
@@ -143,8 +157,8 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
     }
 
-
-    public async Task<IActionResult> RemoveAddress(int id)
+    [HttpDelete("Account/Profile/RemoveAddress")]
+    public async Task<IActionResult> RemoveAddress([FromQuery]int id)
     {
         var result = await addressRepo.DeleteAsync(id);
         if (result.Success)
