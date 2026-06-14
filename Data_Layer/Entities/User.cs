@@ -14,10 +14,11 @@ public class User :IdentityUser
 
     #region Relations
 
-    public List<Role> Roles { get; set; }   
+    public List<Role>? Roles { get; set; }   
     public List<Review>? Reviews { get; set; }
     public List<Order>? Orders { get; set; }
-    public List<Cart>? Carts { get; set; }   
+    public List<Cart>? Carts { get; set; }
+    public List<Address>? Addresses { get; set; }    
     
 
     #endregion

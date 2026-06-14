@@ -14,5 +14,9 @@ public class OrderConfiguration :IEntityTypeConfiguration<Order>
         builder.HasOne(e => e.Payment)
             .WithOne(e => e.Order)
             .HasForeignKey<Order>(e => e.PaymentId);
+        builder.HasOne(e => e.Address)
+            .WithMany(e => e.Orders)
+            .HasForeignKey(e => e.AddressId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

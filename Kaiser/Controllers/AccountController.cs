@@ -1,5 +1,7 @@
-﻿using System.Security.Claims;
+﻿
 using Core_Layer.Dtos.AccountDto;
+using Core_Layer.Dtos.AddressDto;
+using Core_Layer.Repository.Address;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager) : ControllerBase
+public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager,IAddressRepo addressRepo) : ControllerBase
 {
     [HttpPost("/Account/Login")]
     public async Task<IActionResult> Login([FromBody]LoginUserDto dto)
@@ -31,6 +33,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             FirstName = dto.Firstname,
             LastName = dto.Lastname,
             UserName = dto.Username,
+            PhoneNumber = dto.PhoneNumber
 
         }, dto.Password);
         if (result.Succeeded)
@@ -49,7 +52,22 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
        await signInManager.SignOutAsync();
         return base.SignOut();  
     }
+    [HttpPost("Account/Profile/AddAddress")]
+    public async Task<IActionResult> AddAddress([FromBody] AddAddressDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
 
+        var result = await addressRepo.AddAsync(dto);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
+
+    }
     [HttpGet("UserManager")]
     public IActionResult UserManager()
     {
@@ -59,8 +77,55 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             Firstname = e.FirstName,
             Lastname = e.LastName,
             Username = e.UserName,
+            PhoneNumber = e.PhoneNumber
         }).ToList();
         return Ok(users);
+    }
+
+
+    [HttpGet("UserManager/Edit")]
+    public async Task<IActionResult> Edit([FromQuery] string id)
+    {
+        var user = await userManager.FindByIdAsync(id);
+        if (user == null)
+            return BadRequest("کاربر پیدا نشد");
+        var userDto = new UserDto()
+        {
+            Id = user.Id,
+            Firstname = user.FirstName,
+            Lastname = user.LastName,
+            Username = user.UserName,
+            PhoneNumber = user.PhoneNumber
+        };
+        return Ok(userDto);
+    }
+
+ 
+  
+    [HttpGet("Account/Profile/MyAddresses")]
+    public async Task<IActionResult> MyAddresses([FromQuery] string userId)
+    {
+        var addresses = await addressRepo.GetUserAddresses(userId);
+        return Ok(addresses);
+    }
+    [HttpPut("UserManager/Edit")]
+    public async Task<IActionResult> Edit([FromBody] UserDto dto)
+    {
+        var user = await userManager.FindByIdAsync(dto.Id);
+        if (user == null)
+            return BadRequest("کاربر پیدا نشد");
+        user.FirstName = dto.Firstname ?? user.FirstName;
+        user.LastName = dto.Lastname ?? user.LastName;
+        user.UserName = dto.Username ?? user.UserName;
+        user.PhoneNumber = dto.PhoneNumber;
+        var result = await userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            return Ok();
+        }
+        
+        return BadRequest(result.Errors);
+        
     }
 
     [HttpDelete("UserManager/Remove")]
@@ -75,41 +140,17 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             return Ok();
         }
         return BadRequest(result.Errors);
-     
-    }
-    [HttpGet("UserManager/Edit")]
-    public async Task<IActionResult> Edit([FromQuery] string id)
-    {
-        var user = await userManager.FindByIdAsync(id);
-        if (user == null)
-            return BadRequest("کاربر پیدا نشد");
-        var userDto = new UserDto()
-        {
-            Id = user.Id,
-            Firstname = user.FirstName,
-            Lastname = user.LastName,
-            Username = user.UserName
-        };
-        return Ok(userDto);
+
     }
 
-    [HttpPut("UserManager/Edit")]
-    public async Task<IActionResult> Edit([FromBody] UserDto dto)
+
+    public async Task<IActionResult> RemoveAddress(int id)
     {
-        var user = await userManager.FindByIdAsync(dto.Id);
-        if (user == null)
-            return BadRequest("کاربر پیدا نشد");
-        user.FirstName = dto.Firstname ?? user.FirstName;
-        user.LastName = dto.Lastname ?? user.LastName;
-        user.UserName = dto.Username ?? user.UserName;
-        var result = await userManager.UpdateAsync(user);
-        if (result.Succeeded)
+        var result = await addressRepo.DeleteAsync(id);
+        if (result.Success)
         {
             return Ok();
         }
-        else
-        {
-            return BadRequest(result.Errors);
-        }
+        return BadRequest(result.Message);
     }
 }

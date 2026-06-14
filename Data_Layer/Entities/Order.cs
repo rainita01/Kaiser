@@ -15,6 +15,9 @@ public class Order
 
     #region Relations
 
+    public int AddressId { get; set; }
+    public Address Address { get; set; }
+
     public int PaymentId { get; set; }
     public Payment Payment { get; set; }    
     public List<OrderItem> OrderItems { get; set; }

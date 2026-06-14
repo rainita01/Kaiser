@@ -1,4 +1,5 @@
 using Core_Layer.Profiles;
+using Core_Layer.Repository.Address;
 using Core_Layer.Repository.Category;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
@@ -37,6 +38,7 @@ builder.Services.AddScoped<IImageRepo, ImageRepo>();
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IViewsRepo, ViewRepo>();
+builder.Services.AddScoped<IAddressRepo, AddressRepo>();
 
 #endregion
 
@@ -47,6 +49,7 @@ builder.Services.AddAutoMapper(mapp =>
     mapp.AddProfile<ImageProfile>();
     mapp.AddProfile<CategoryProfile>();
     mapp.AddProfile<ProductProfile>();
+    mapp.AddProfile<AddressProfile>();
 });
 
 #endregion
