@@ -102,58 +102,42 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             return ActionResult.Failed(e.Message);
         }
     }
-
-    public async Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber)
+  
+    public async Task<List<ProductCardDto>> GetProductPagesAsync(
+        int page,
+        int? pageSize,
+        decimal? minPrice,
+        decimal? maxPrice,
+        SortProduct? sort,
+        string? search,
+        int? categoryId)
     {
-        var products = await context.Products
+        var actualPageSize = pageSize ?? 10;
+        var skip = (page - 1) * actualPageSize;
+
+
+        var query = context.Products
             .AsNoTracking()
-            .Skip((pageNumber - 1) * 10)
-            .Take(10)
+            .Where(e => (categoryId == null || e.CategoryId == categoryId) &&
+                        (minPrice == null || e.Price >= minPrice) &&
+                        (maxPrice == null || e.Price <= maxPrice) &&
+                        (string.IsNullOrEmpty(search) || e.Name.Contains(search)));
+
+        // اعمال مرتب‌سازی در دیتابیس
+        query = sort switch
+        {
+            SortProduct.MostViewed => query.OrderByDescending(e => e.ProductViews.Count()),
+            SortProduct.PriceAsc => query.OrderBy(e => e.Price),
+            SortProduct.PriceDesc => query.OrderByDescending(e => e.Price),
+            _ => query.OrderBy(e => e.Id)
+        };
+
+        // اعمال صفحه‌بندی و ProjectTo
+        return await query
+            .Skip(skip)
+            .Take(actualPageSize)
             .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
             .ToListAsync();
-        for (int i = 0; i < products.Count; i++)
-        {
-            products[i].Image = await imageRepo.GetFirstImageAsync(products[i].Id);
-            products[i].Views = await viewsRepo.GetPageViewsCount(products[i].Id);
-        }
-
-        return products;
-    }
-
-    public async Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber, int? categoryId)
-    {
-        var products = await context.Products
-            .AsNoTracking()
-            .Where(e => e.CategoryId == categoryId)
-            .Skip((pageNumber - 1) * 10)
-            .Take(10)
-            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
-        for (int i = 0; i < products.Count; i++)
-        {
-            products[i].Image = await imageRepo.GetFirstImageAsync(products[i].Id);
-            products[i].Views = await viewsRepo.GetPageViewsCount(products[i].Id);
-        }
-
-        return products;
-    }
-
-    public async Task<List<ProductCardDto>> GetProductPagesAsync(int pageNumber, string search)
-    {
-        var products = await context.Products
-            .AsNoTracking()
-            .Where(e => e.Name.Contains(search))
-            .Skip((pageNumber - 1) * 10)
-            .Take(10)
-            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
-        for (int i = 0; i < products.Count; i++)
-        {
-            products[i].Image = await imageRepo.GetFirstImageAsync(products[i].Id);
-            products[i].Views = await viewsRepo.GetPageViewsCount(products[i].Id);
-        }
-
-        return products;
     }
 
     public async Task<ProductDto> GetProductAsync(int id)

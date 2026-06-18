@@ -1,7 +1,10 @@
 ﻿
+using System.Security.Claims;
+using Core_Layer.Dtos.CartDto;
 using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Dtos.ViewsDto;
+using Core_Layer.Repository.Cart;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
@@ -10,25 +13,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IImageRepo imageRepo) : ControllerBase
+public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, IImageRepo imageRepo, ICartRepo cartRepo)
+    : ControllerBase
 {
     [HttpGet("Products")]
-    public async Task<IActionResult> GetProducts([FromQuery] string? search = null, [FromQuery] int? categoryId = null, [FromQuery] int pageNumber = 1)
+    public async Task<IActionResult> GetProducts(
+        [FromQuery] string? search,
+        [FromQuery] int? pageSize,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] SortProduct? sort,
+        [FromQuery] int? categoryId,
+        [FromQuery] int page = 1)
     {
-        List<ProductCardDto> products;
-
-        if (!string.IsNullOrEmpty(search))
-        {
-            products = await productRepo.GetProductPagesAsync(pageNumber, search);
-        }
-        else if (categoryId.HasValue && categoryId.Value > 0)
-        {
-            products = await productRepo.GetProductPagesAsync(pageNumber, categoryId.Value);
-        }
-        else
-        {
-            products = await productRepo.GetProductPagesAsync(pageNumber);
-        }
+        List<ProductCardDto> products =
+            await productRepo.GetProductPagesAsync(page, pageSize, minPrice, maxPrice, sort, search, categoryId);
 
         return Ok(products);
     }
@@ -46,20 +45,24 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IIm
         });
         return Ok(product);
     }
+
     [HttpPost("ProductManager/add")]
-    public async Task<IActionResult> AddProduct([FromForm]AddProductDto dto)
+    public async Task<IActionResult> AddProduct([FromForm] AddProductDto dto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest("مدل ناقص میباشد ");
         }
+
         var result = await productRepo.AddAsync(dto);
         if (result.Success)
         {
             return Created();
         }
+
         return BadRequest(result.Message);
     }
+
     [HttpDelete("ProductManager/Remove")]
     public async Task<IActionResult> RemoveProduct(int id)
     {
@@ -68,6 +71,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IIm
         {
             return Ok();
         }
+
         return BadRequest(result.Message);
     }
 
@@ -79,12 +83,13 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IIm
         {
             return NotFound($"Product with id {id} not found");
         }
+
         return Ok(result);
     }
 
 
     [HttpPut("ProductManager/EditProduct")]
-    public async Task<IActionResult> Edit([FromForm]UpdateProductDto dto)
+    public async Task<IActionResult> Edit([FromForm] UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
 
@@ -95,6 +100,7 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IIm
 
         return BadRequest(result.Message);
     }
+
     [HttpDelete("ProductManager/EditProduct/RemoveImage")]
     public async Task<IActionResult> DeleteImage(int id)
     {
@@ -104,20 +110,29 @@ public class ProductController(IProductRepo productRepo,IViewsRepo viewsRepo,IIm
         {
             return Ok();
         }
+
         return BadRequest(result.Message);
     }
+
     [HttpPost("ProductManager/EditProduct/AddImage")]
     public async Task<IActionResult> DeleteImage(AddImageDto dto)
     {
-        if (dto.ProductId == null )
+        if (dto.ProductId == null)
         {
             return BadRequest("ای دی محصول نال میباشد");
         }
+
         var result = await imageRepo.AddAsync(dto.Image, (int)dto.ProductId);
         if (result.Success)
         {
             return Ok();
         }
+
         return BadRequest(result.Message);
     }
+
+   
+
+ 
+
 }

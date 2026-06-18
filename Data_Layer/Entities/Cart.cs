@@ -8,7 +8,7 @@ public class Cart : BaseEntity
 
     public string UserId { get; set; }
     public User User { get; set; }
-    public List<CartItem> CartItems { get; set; }   
+    public List<CartItem>? CartItems { get; set; }   
 
     #endregion
 }

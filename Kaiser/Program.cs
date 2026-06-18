@@ -1,5 +1,6 @@
 using Core_Layer.Profiles;
 using Core_Layer.Repository.Address;
+using Core_Layer.Repository.Cart;
 using Core_Layer.Repository.Category;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
@@ -39,7 +40,7 @@ builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<IViewsRepo, ViewRepo>();
 builder.Services.AddScoped<IAddressRepo, AddressRepo>();
-
+builder.Services.AddScoped<ICartRepo, CartRepo>();
 #endregion
 
 #region Mapper
