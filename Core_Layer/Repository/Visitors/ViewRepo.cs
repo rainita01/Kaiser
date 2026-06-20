@@ -14,7 +14,13 @@ public class ViewRepo(Context context,IMapper mapper) :IViewsRepo
     {
         try
         {
-            var model = mapper.Map<ProductView>(dto);
+            var model = new ProductView()
+            {
+                IpAddress = dto.IpAddress,
+                ProductId = dto.ProductId,
+                SesstionId = dto.SesstionId,
+                ViewAt = dto.ViewAt
+            };
             await context.ProductViews.AddAsync(model);
             await context.SaveChangesAsync();
 
