@@ -1,4 +1,4 @@
-using Core_Layer.Profiles;
+﻿using Core_Layer.Profiles;
 using Core_Layer.Repository.Address;
 using Core_Layer.Repository.Cart;
 using Core_Layer.Repository.Category;
@@ -78,7 +78,19 @@ builder.Services.AddCors(options =>
             .AllowCredentials();                   
     });
 });
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // تنظیمات کوکی
+    options.Cookie.Name = "Kaiser.shop";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // برای توسعه
 
+    // زمان انقضا
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.SlidingExpiration = true;
+
+});
 
 var app = builder.Build(); 
 app.UseCors("AllowFrontend");

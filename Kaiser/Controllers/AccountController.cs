@@ -26,23 +26,24 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
     [HttpPost("Account/Register")]
     public async Task<IActionResult> Register([FromBody]RegisterUserDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest("مدل ارسالی ناقص میباشد");
+        
         var result = await userManager.CreateAsync(new User()
         {
             AccessFailedCount = 0,
             FirstName = dto.Firstname,
             LastName = dto.Lastname,
             UserName = dto.Username,
-            PhoneNumber = dto.PhoneNumber
+            PhoneNumber = dto.PhoneNumber,
 
         }, dto.Password);
         if (result.Succeeded)
         {
             return Ok();
         }
-        else
-        {
-            return BadRequest(result.ToString());
-        }
+        
+        return BadRequest(result.ToString());
     }
 
     [HttpPost("Account/LogOut")]
