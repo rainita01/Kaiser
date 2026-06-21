@@ -24,7 +24,7 @@ public class Product : BaseEntity
     public int StockQuantity { get; set; }
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
-
+    public DateTime CreateTime { get; set; }
 
     #region Relations
 

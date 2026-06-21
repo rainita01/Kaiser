@@ -1,6 +1,4 @@
 ﻿
-
-using AutoMapper;
 using Core_Layer.Dtos.ViewsDto;
 using Data_Layer.Context;
 using Data_Layer.Entities;
@@ -8,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core_Layer.Repository.Visitors;
 
-public class ViewRepo(Context context,IMapper mapper) :IViewsRepo
+public class ViewRepo(Context context) :IViewsRepo
 {
     public async Task<ActionResult> AddAsync(AddViewDto dto)
     {

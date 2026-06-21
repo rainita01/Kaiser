@@ -12,4 +12,5 @@ public class ProductCardDto
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
     public string? Image { get; set; }
+    public DateTime CreateTime { get; set; }
 }

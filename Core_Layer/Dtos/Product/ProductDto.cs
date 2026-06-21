@@ -18,5 +18,6 @@ public class ProductDto
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
     public List<ImageDto.ImageDto> Images { get; set; }
-    
+    public DateTime CreateTime { get; set; }
+
 }
