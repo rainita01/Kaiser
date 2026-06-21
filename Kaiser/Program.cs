@@ -84,7 +84,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "Kaiser.shop";
     options.Cookie.HttpOnly = false;
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // برای توسعه
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None; 
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
 

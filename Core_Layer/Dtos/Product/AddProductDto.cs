@@ -13,6 +13,7 @@ public class AddProductDto
     public int StockQuantity { get; set; }
     public int CategoryId { get; set; }
     public int DiscountPercent { get; set; }
+    public bool IsBestSell { get; set; }
     public List<IFormFile>? Images { get; set; }
     public DateTime CreateTime { get; set; } = DateTime.Now;
 
