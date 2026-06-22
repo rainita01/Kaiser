@@ -1,10 +1,8 @@
 ﻿
-using System.Security.Claims;
-using Core_Layer.Dtos.CartDto;
 using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Dtos.ViewsDto;
-using Core_Layer.Repository.Cart;
+
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
@@ -13,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, IImageRepo imageRepo, ICartRepo cartRepo)
+public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, IImageRepo imageRepo)
     : ControllerBase
 {
     [HttpGet("Products")]
@@ -36,12 +34,13 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     public async Task<IActionResult> ProductDetail(int id, string slug)
     {
         var product = await productRepo.GetProductAsync(id);
+        string? ipaddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         await viewsRepo.AddAsync(new AddViewDto()
         {
             ProductId = id,
             ViewAt = DateTime.Now,
             SesstionId = Guid.NewGuid().ToString(),
-            IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
+            IpAddress = ipaddress
         });
         return Ok(product);
     }
@@ -78,7 +77,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     [HttpGet("ProductManager/EditProduct")]
     public async Task<IActionResult> Edit(int id)
     {
-        UpdateProductDto? result = await productRepo.GetUpdateProductAsync(id);
+        UpdateProductDto result = await productRepo.GetUpdateProductAsync(id);
         if (result == null)
         {
             return NotFound($"Product with id {id} not found");
