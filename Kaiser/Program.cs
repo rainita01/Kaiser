@@ -8,6 +8,7 @@ using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
+using Core_Layer.Services.Seed;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Data_Layer.Entities;
@@ -93,7 +94,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 });
 
-var app = builder.Build(); 
+var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+}
 app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment()) 

@@ -9,5 +9,4 @@ public class AddAddressDto
     public string Province { get; set; }
     public string City { get; set; }
     public string FullAddress { get; set; }
-    public string UserId { get; set; } 
 }

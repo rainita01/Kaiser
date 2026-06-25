@@ -1,5 +1,6 @@
 ﻿using Core_Layer.Dtos.CartDto;
 using Core_Layer.Repository.Cart;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -7,7 +8,8 @@ namespace Kaiser.Controllers;
 
 public class CartController(ICartRepo cartRepo) : ControllerBase
 {
-    [HttpGet("Carts")] 
+    [HttpGet("Carts")]
+    [Authorize]
     public async Task<IActionResult> GetMyCarts()
     {
         var result = await cartRepo.GetUserCartItemsAsync(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -16,6 +18,7 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
     }
 
     [HttpPost("Carts/AddCart")]
+    [Authorize]
     public async Task<IActionResult> AddCart([FromBody] RequestCartDto dto)
     {
         var cartitem = new AddCartItemDto()
@@ -35,7 +38,7 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
 
         return BadRequest(result.Message);
     }
-
+    [Authorize]
     [HttpPut("Carts/IncreaseQuantity")]
     public async Task<IActionResult> IncreaseQuantity(int carItemId)
     {
@@ -47,7 +50,7 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
 
         return BadRequest(result.Message);
     }
-
+    [Authorize]
     [HttpPut("Carts/DecreaseQuantity")]
     public async Task<IActionResult> DecreaseQuantity(int carItemId)
     {
@@ -60,6 +63,7 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
         return BadRequest(result.Message);
     }
     [HttpDelete("Carts/RemoveCartItem")]
+    [Authorize]
     public async Task<IActionResult> RemoveCartItem(int cartItemId)
     {
         var result = await cartRepo.RemoveItemAsync(cartItemId);
@@ -70,9 +74,4 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
 
         return BadRequest(result.Message);
     }
-
-
-
-
-
 }

@@ -1,11 +1,12 @@
 ﻿using Core_Layer.Dtos.CartDto;
+using Core_Layer.Repository.Image;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core_Layer.Repository.Cart;
 
-public class CartRepo(Context context) :ICartRepo
+public class CartRepo(Context context,IImageRepo imageRepo) :ICartRepo
 {
     public async Task<ActionResult> AddItemAsync(AddCartItemDto itemDto)
     {
@@ -130,7 +131,6 @@ public class CartRepo(Context context) :ICartRepo
         var cartItems = await context.CartItems
             .AsNoTracking()
             .Where(ci => ci.Cart.UserId == userId)  // ارتباط با Cart
-            .Include(ci => ci.Product)
             .Select(ci => new CartItemDto
             {
                 DiscountPercent = ci.Product.DiscountPercent,
@@ -139,9 +139,9 @@ public class CartRepo(Context context) :ICartRepo
                 Price = ci.Product.Price,
                 ProductId = ci.ProductId,
                 Quantity = ci.Quantity,
+                ImageName =  ci.Product.Images.FirstOrDefault().Name,
                 UserId = userId
-            })
-            .ToListAsync();
+            }).ToListAsync();
 
         return cartItems;
 

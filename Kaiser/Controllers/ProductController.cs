@@ -6,6 +6,7 @@ using Core_Layer.Dtos.ViewsDto;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.Visitors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
@@ -31,6 +32,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpGet("Products/Detail/{id}/{slug}")]
+   
     public async Task<IActionResult> ProductDetail(int id, string slug)
     {
         var product = await productRepo.GetProductAsync(id);
@@ -46,6 +48,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpPost("ProductManager/add")]
+    [Authorize]
     public async Task<IActionResult> AddProduct([FromForm] AddProductDto dto)
     {
         if (!ModelState.IsValid)
@@ -63,6 +66,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpDelete("ProductManager/Remove")]
+    [Authorize]
     public async Task<IActionResult> RemoveProduct(int id)
     {
         var result = await productRepo.DeleteAsync(id);
@@ -75,6 +79,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpGet("ProductManager/EditProduct")]
+    [Authorize]
     public async Task<IActionResult> Edit(int id)
     {
         UpdateProductDto result = await productRepo.GetUpdateProductAsync(id);
@@ -88,6 +93,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
 
 
     [HttpPut("ProductManager/EditProduct")]
+    [Authorize]
     public async Task<IActionResult> Edit([FromForm] UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
@@ -101,6 +107,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpDelete("ProductManager/EditProduct/RemoveImage")]
+    [Authorize]
     public async Task<IActionResult> DeleteImage(int id)
     {
         var result = await imageRepo.RemoveAsync(id);
@@ -114,6 +121,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpPost("ProductManager/EditProduct/AddImage")]
+    [Authorize]
     public async Task<IActionResult> DeleteImage(AddImageDto dto)
     {
         if (dto.ProductId == null)

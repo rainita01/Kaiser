@@ -37,7 +37,7 @@ public class ContactUsController(IContactUsRepo contactUsRepo) : ControllerBase
         {
             return Ok();
         }
-
+        
         return BadRequest("ناموفق در حذف");
     }
 

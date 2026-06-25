@@ -1,10 +1,12 @@
 ﻿using Core_Layer.Dtos.Category;
 using Core_Layer.Repository.Category;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
 [ApiController]
+[Authorize]
 public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
 {
 

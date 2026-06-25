@@ -1,19 +1,25 @@
 ﻿
+using System.Security.Claims;
 using Core_Layer.Dtos.AccountDto;
 using Core_Layer.Dtos.AddressDto;
 using Core_Layer.Repository.Address;
 using Data_Layer.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager,IAddressRepo addressRepo) : ControllerBase
+public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager,IAddressRepo addressRepo,RoleManager<Role> roleManager) : ControllerBase
 {
     [HttpPost("/Account/Login")]
     public async Task<IActionResult> Login([FromBody]LoginUserDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest("مدل ناقص میباشد");
         var result = await signInManager.PasswordSignInAsync(dto.Username, dto.Password, dto.IsPersistent, false);
         if (result.Succeeded)
         {
@@ -46,21 +52,24 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.ToString());
     }
 
+    [Authorize]
     [HttpPost("Account/LogOut")]
     public async Task<IActionResult> LogOut()
     {
        await signInManager.SignOutAsync();
         return base.SignOut();  
     }
+    [Authorize]
     [HttpPost("Account/Profile/AddAddress")]
     public async Task<IActionResult> AddAddress([FromBody] AddAddressDto dto)
     {
         if (!ModelState.IsValid)
-        {
             return BadRequest();
-        }
 
-        var result = await addressRepo.AddAsync(dto);
+        var userid = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userid == null)
+            return BadRequest("اول باید وارد شوید");
+        var result = await addressRepo.AddAsync(dto,userid);
         if (result.Success)
         {
             return Ok();
@@ -68,6 +77,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.Message);
 
     }
+    [Authorize]
     [HttpGet("UserManager")]
     public IActionResult UserManager()
     {
@@ -82,10 +92,11 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return Ok(users);
     }
 
-
+    [Authorize]
     [HttpGet("UserManager/Edit")]
     public async Task<IActionResult> Edit([FromQuery] string id)
     {
+        
         var user = await userManager.FindByIdAsync(id);
         if (user == null)
             return BadRequest("کاربر پیدا نشد");
@@ -100,13 +111,14 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return Ok(userDto);
     }
 
- 
-  
-
-
+    [Authorize]
     [HttpPut("UserManager/Edit")]
     public async Task<IActionResult> Edit([FromBody] UserDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("مدل ناقص میباشد");
+        }
         var user = await userManager.FindByIdAsync(dto.Id);
         if (user == null)
             return BadRequest("کاربر پیدا نشد");
@@ -123,15 +135,97 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.Errors);
         
     }
-    [HttpGet("Account/Profile/MyAddresses")]
-    public async Task<IActionResult> MyAddresses([FromQuery] string userId)
+    [HttpPut("UserManager/AddRoleToUser")]
+    public async Task<IActionResult> AddRoleToUser([FromBody] AddRoleToUserDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("مدل ناقص میباشد");
+        }
+
+        var user = await userManager.FindByIdAsync(dto.UserId);
+        if (user == null)
+            return BadRequest("اضافه کردن نقش موفقیت آمیز نبود");
+
+
+        var result = await userManager.AddToRoleAsync(user, dto.RoleName);
+        if (result.Succeeded)
+            return Ok();
+        return BadRequest(result.Errors.ToString());
+    }
+
+    [HttpGet("RoleManager")]
+    public async Task<IActionResult> GetRoles()
+    {
+        var roles = await roleManager.Roles.Select(e=>new RoleDto(){Id = e.Id,Name = e.Name}).ToListAsync();
+        return Ok(roles);
+    }
+    //[HttpGet("RoleManager/GetRolesUsers")]
+    //public async Task<IActionResult> GetUsersRoles()
+    //{
+    //    var data = await userManager.Users
+    //        .SelectMany(
+    //            u => u.Roles,(user, role) => new
+    //            {
+    //                RoleName = role.Name,
+    //                User = new UserNameWithIdDto
+    //                {
+    //                    Id = user.Id,
+    //                    Username = user.UserName
+    //                }
+    //            })
+    //        .ToListAsync();
+    //    var result = data.GroupBy(e => e.RoleName)
+    //        .Select(e => new RolesWithUsers()
+    //        {
+    //            RoleName = e.Key,
+    //            Users = e.Select(s => s.User).ToList()
+    //        }).ToList();
+
+    //    return Ok(result);
+    //}
+
+    [HttpPost("RoleManager/AddRole")]
+    public async Task<IActionResult> AddRole(string name)
+    {
+        var result = await roleManager.CreateAsync(new Role() { Name = name });
+        if (result.Succeeded)
+            return Ok();
+        return BadRequest(result.Errors.ToString());
+    }
+    [HttpDelete("RoleManager/RemoveRole")]
+    public async Task<IActionResult> RemoveRole(string roleId)
+    {
+        var role = await roleManager.FindByIdAsync(roleId);
+        if (role == null)
+            return BadRequest("نقش پیدا نشد");
+        var result = await roleManager.DeleteAsync(role);
+        if (result.Succeeded)
+            return Ok();
+        return BadRequest(result.Errors.ToString());
+
+    }
+
+
+
+
+
+    [Authorize]
+    [HttpGet("Account/Profile/MyAddresses")]
+    public async Task<IActionResult> MyAddresses()
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return BadRequest("اول باید ورود کنید");
         var addresses = await addressRepo.GetUserAddresses(userId);
         return Ok(addresses);
     }
+    [Authorize]
     [HttpPut("Account/Profile/EditAddress")]
     public async Task<IActionResult> Edit([FromBody] UpdateAddressDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest("مدل ناقص میباشد");
         var result = await addressRepo.UpdateAsync(dto);
         if (result.Success)
         {
@@ -140,12 +234,28 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
         return BadRequest(result.Message);
     }
+    [HttpPut("Account/Profile/ChangePassword")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest("مدل ناقص میباشد");
+        var user = await userManager.FindByIdAsync(dto.UserId);
+        if (user == null)
+            return BadRequest("عوض کردن رمز موفقیت امیز نبود");
+        var result = await userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+        if (result.Succeeded)
+            return Ok();
+        return BadRequest(result.Errors.ToString());
+
+    }
 
 
-
+    [Authorize]
     [HttpDelete("UserManager/Remove")]
     public async Task<IActionResult> Remove([FromBody] string id)
     {
+
         var user = await userManager.FindByIdAsync(id);
         if (user == null)
             return BadRequest("کاربر پیدا نشد");
@@ -157,7 +267,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.Errors);
 
     }
-
+    [Authorize]
     [HttpDelete("Account/Profile/RemoveAddress")]
     public async Task<IActionResult> RemoveAddress([FromQuery]int id)
     {
@@ -168,4 +278,6 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         }
         return BadRequest(result.Message);
     }
+
+
 }

@@ -9,12 +9,13 @@ namespace Core_Layer.Repository.Address;
 
 public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
 {
-    public async Task<ActionResult> AddAsync(AddAddressDto dto)
+    public async Task<ActionResult> AddAsync(AddAddressDto dto,string userId)
     {
         
         try
         {
             var address = mapper.Map<Data_Layer.Entities.Address>(dto);
+            address.UserId = userId;
             await context.Addresses.AddAsync(address);
             await context.SaveChangesAsync();
             return ActionResult.Completed();

@@ -4,7 +4,7 @@ namespace Core_Layer.Repository.Address;
 
 public interface IAddressRepo
 {
-    public Task<ActionResult> AddAsync(AddAddressDto dto);
+    public Task<ActionResult> AddAsync(AddAddressDto dto,string userId);
     public Task<ActionResult> UpdateAsync(UpdateAddressDto dto);
     public Task<ActionResult> DeleteAsync(int id);
     public Task<ActionResult> AddAddressToOrderAsync(AddAddressToOrderDto id);
