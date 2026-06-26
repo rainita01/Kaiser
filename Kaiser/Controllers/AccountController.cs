@@ -120,7 +120,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
     }
     [Authorize(Roles = "admin")]
     [HttpPut("UserManager/AddRoleToUser")]
-    public async Task<IActionResult> AddRoleToUser([FromBody] AddRoleToUserDto dto)
+    public async Task<IActionResult> AddRoleToUser([FromBody] RoleToUserDto dto)
     {
         if (!ModelState.IsValid)
         {
@@ -137,6 +137,24 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             return Ok();
         return BadRequest(result.Errors.ToString());
     }
+
+    [HttpPut("UserManager/RemoveRoleFromUser")]
+    public async Task<IActionResult> RemoveRoleFromUser([FromBody] RoleToUserDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("مدل ناقص میباشد");
+        }
+
+        var user = await userManager.FindByIdAsync(dto.UserId);
+        if (user == null)
+            return BadRequest("حذف کردن نقش موفقیت آمیز نبود");
+        var result = await userManager.RemoveFromRoleAsync(user, dto.RoleName);
+        if (result.Succeeded)
+            return Ok();
+        return BadRequest(result.Errors.ToString());
+
+    }
     [Authorize(Roles = "admin")]
     [HttpDelete("UserManager/RemoveUser")]
     public async Task<IActionResult> Remove([FromBody] string id)
@@ -152,6 +170,60 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         }
         return BadRequest(result.Errors);
 
+    }
+
+    [Authorize]
+    [HttpGet("Account/Profile/MyAddresses")]
+    public async Task<IActionResult> MyAddresses()
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return BadRequest("اول باید ورود کنید");
+        var addresses = await addressRepo.GetUserAddresses(userId);
+        return Ok(addresses);
+    }
+    [Authorize]
+    [HttpPost("Account/Profile/AddAddress")]
+    public async Task<IActionResult> AddAddress([FromBody] AddAddressDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var userid = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userid == null)
+            return BadRequest("اول باید وارد شوید");
+        var result = await addressRepo.AddAsync(dto, userid);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
+    }
+
+    [Authorize]
+    [HttpPut("Account/Profile/EditAddress")]
+    public async Task<IActionResult> Edit([FromBody] UpdateAddressDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest("مدل ناقص میباشد");
+        var result = await addressRepo.UpdateAsync(dto);
+        if (result.Success)
+        {
+            return Ok();
+        }
+
+        return BadRequest(result.Message);
+    }
+    [Authorize]
+    [HttpDelete("Account/Profile/RemoveAddress")]
+    public async Task<IActionResult> RemoveAddress([FromQuery] int id)
+    {
+        var result = await addressRepo.DeleteAsync(id);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
     }
     [Authorize(Roles = "admin")]
     [HttpGet("RoleManager")]
@@ -212,59 +284,6 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
 
 
-    [Authorize]
-    [HttpGet("Account/Profile/MyAddresses")]
-    public async Task<IActionResult> MyAddresses()
-    {
-        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-            return BadRequest("اول باید ورود کنید");
-        var addresses = await addressRepo.GetUserAddresses(userId);
-        return Ok(addresses);
-    }
-    [Authorize]
-    [HttpPost("Account/Profile/AddAddress")]
-    public async Task<IActionResult> AddAddress([FromBody] AddAddressDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest();
-
-        var userid = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userid == null)
-            return BadRequest("اول باید وارد شوید");
-        var result = await addressRepo.AddAsync(dto, userid);
-        if (result.Success)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Message);
-    }
-
-    [Authorize]
-    [HttpPut("Account/Profile/EditAddress")]
-    public async Task<IActionResult> Edit([FromBody] UpdateAddressDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest("مدل ناقص میباشد");
-        var result = await addressRepo.UpdateAsync(dto);
-        if (result.Success)
-        {
-            return Ok();
-        }
-
-        return BadRequest(result.Message);
-    }
-    [Authorize]
-    [HttpDelete("Account/Profile/RemoveAddress")]
-    public async Task<IActionResult> RemoveAddress([FromQuery] int id)
-    {
-        var result = await addressRepo.DeleteAsync(id);
-        if (result.Success)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Message);
-    }
     [Authorize]
     [HttpPut("Account/Profile/ChangePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
