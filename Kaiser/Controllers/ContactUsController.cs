@@ -1,5 +1,6 @@
 ﻿using Core_Layer.Dtos.ContactUsDto;
 using Core_Layer.Repository.ContactUs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
@@ -7,6 +8,7 @@ namespace Kaiser.Controllers;
 public class ContactUsController(IContactUsRepo contactUsRepo) : ControllerBase
 {
     [HttpGet("Suggestions")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetSuggestions()
     {
         return Ok(await contactUsRepo.Get());
@@ -30,6 +32,7 @@ public class ContactUsController(IContactUsRepo contactUsRepo) : ControllerBase
         return BadRequest("ناموفق در ارسال");
     }
     [HttpDelete("RemoveContactUs")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Remove(int id)
     {
         var result = await contactUsRepo.Remove(id);

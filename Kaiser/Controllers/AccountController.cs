@@ -7,7 +7,6 @@ using Data_Layer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kaiser.Controllers;
@@ -59,25 +58,9 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
        await signInManager.SignOutAsync();
         return base.SignOut();  
     }
-    [Authorize]
-    [HttpPost("Account/Profile/AddAddress")]
-    public async Task<IActionResult> AddAddress([FromBody] AddAddressDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest();
+   
 
-        var userid = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userid == null)
-            return BadRequest("اول باید وارد شوید");
-        var result = await addressRepo.AddAsync(dto,userid);
-        if (result.Success)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Message);
-
-    }
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpGet("UserManager")]
     public IActionResult UserManager()
     {
@@ -92,7 +75,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return Ok(users);
     }
 
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpGet("UserManager/Edit")]
     public async Task<IActionResult> Edit([FromQuery] string id)
     {
@@ -111,7 +94,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return Ok(userDto);
     }
 
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpPut("UserManager/Edit")]
     public async Task<IActionResult> Edit([FromBody] UserDto dto)
     {
@@ -135,6 +118,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.Errors);
         
     }
+    [Authorize(Roles = "admin")]
     [HttpPut("UserManager/AddRoleToUser")]
     public async Task<IActionResult> AddRoleToUser([FromBody] AddRoleToUserDto dto)
     {
@@ -153,11 +137,28 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             return Ok();
         return BadRequest(result.Errors.ToString());
     }
+    [Authorize(Roles = "admin")]
+    [HttpDelete("UserManager/RemoveUser")]
+    public async Task<IActionResult> Remove([FromBody] string id)
+    {
 
+        var user = await userManager.FindByIdAsync(id);
+        if (user == null)
+            return BadRequest("کاربر پیدا نشد");
+        var result = await userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Errors);
+
+    }
+    [Authorize(Roles = "admin")]
     [HttpGet("RoleManager")]
     public async Task<IActionResult> GetRoles()
     {
-        var roles = await roleManager.Roles.Select(e=>new RoleDto(){Id = e.Id,Name = e.Name}).ToListAsync();
+        var roles = await roleManager.Roles.Select(e
+            =>new RoleDto(){Id = e.Id,Name = e.Name}).ToListAsync();
         return Ok(roles);
     }
     //[HttpGet("RoleManager/GetRolesUsers")]
@@ -184,7 +185,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
     //    return Ok(result);
     //}
-
+    [Authorize(Roles = "admin")]
     [HttpPost("RoleManager/AddRole")]
     public async Task<IActionResult> AddRole(string name)
     {
@@ -193,6 +194,7 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             return Ok();
         return BadRequest(result.Errors.ToString());
     }
+    [Authorize(Roles = "admin")]
     [HttpDelete("RoleManager/RemoveRole")]
     public async Task<IActionResult> RemoveRole(string roleId)
     {
@@ -221,6 +223,24 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return Ok(addresses);
     }
     [Authorize]
+    [HttpPost("Account/Profile/AddAddress")]
+    public async Task<IActionResult> AddAddress([FromBody] AddAddressDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        var userid = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userid == null)
+            return BadRequest("اول باید وارد شوید");
+        var result = await addressRepo.AddAsync(dto, userid);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
+    }
+
+    [Authorize]
     [HttpPut("Account/Profile/EditAddress")]
     public async Task<IActionResult> Edit([FromBody] UpdateAddressDto dto)
     {
@@ -234,6 +254,18 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
         return BadRequest(result.Message);
     }
+    [Authorize]
+    [HttpDelete("Account/Profile/RemoveAddress")]
+    public async Task<IActionResult> RemoveAddress([FromQuery] int id)
+    {
+        var result = await addressRepo.DeleteAsync(id);
+        if (result.Success)
+        {
+            return Ok();
+        }
+        return BadRequest(result.Message);
+    }
+    [Authorize]
     [HttpPut("Account/Profile/ChangePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
     {
@@ -249,35 +281,4 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
         return BadRequest(result.Errors.ToString());
 
     }
-
-
-    [Authorize]
-    [HttpDelete("UserManager/Remove")]
-    public async Task<IActionResult> Remove([FromBody] string id)
-    {
-
-        var user = await userManager.FindByIdAsync(id);
-        if (user == null)
-            return BadRequest("کاربر پیدا نشد");
-        var result = await userManager.DeleteAsync(user);
-        if (result.Succeeded)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Errors);
-
-    }
-    [Authorize]
-    [HttpDelete("Account/Profile/RemoveAddress")]
-    public async Task<IActionResult> RemoveAddress([FromQuery]int id)
-    {
-        var result = await addressRepo.DeleteAsync(id);
-        if (result.Success)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Message);
-    }
-
-
 }

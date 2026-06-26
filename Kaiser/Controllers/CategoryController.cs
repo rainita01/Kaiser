@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kaiser.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Roles = "admin")]
 public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
 {
 
@@ -44,7 +44,7 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
         }
     }
     [HttpPut("CategoryManager/Update")]
- 
+    
     public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryDto dto)
     {
         var result = await categoryRepo.UpdateAsync(dto);

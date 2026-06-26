@@ -48,7 +48,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpPost("ProductManager/add")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> AddProduct([FromForm] AddProductDto dto)
     {
         if (!ModelState.IsValid)
@@ -66,7 +66,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpDelete("ProductManager/Remove")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> RemoveProduct(int id)
     {
         var result = await productRepo.DeleteAsync(id);
@@ -79,7 +79,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpGet("ProductManager/EditProduct")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Edit(int id)
     {
         UpdateProductDto result = await productRepo.GetUpdateProductAsync(id);
@@ -93,7 +93,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
 
 
     [HttpPut("ProductManager/EditProduct")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Edit([FromForm] UpdateProductDto dto)
     {
         var result = await productRepo.UpdateAsync(dto);
@@ -107,7 +107,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpDelete("ProductManager/EditProduct/RemoveImage")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteImage(int id)
     {
         var result = await imageRepo.RemoveAsync(id);
@@ -121,7 +121,7 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     }
 
     [HttpPost("ProductManager/EditProduct/AddImage")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteImage(AddImageDto dto)
     {
         if (dto.ProductId == null)
