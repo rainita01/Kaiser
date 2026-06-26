@@ -1,6 +1,6 @@
 ﻿namespace Core_Layer.Dtos.AccountDto;
 
-public class RolesWithUsers
+public class RolesWithUsersDto
 {
     public string RoleName { get; set; }
     public List<UserNameWithIdDto> Users { get; set; }

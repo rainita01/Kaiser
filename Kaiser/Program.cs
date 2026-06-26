@@ -5,6 +5,8 @@ using Core_Layer.Repository.Category;
 using Core_Layer.Repository.ContactUs;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
+using Core_Layer.Repository.Role;
+using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
@@ -44,6 +46,7 @@ builder.Services.AddScoped<IViewsRepo, ViewRepo>();
 builder.Services.AddScoped<IAddressRepo, AddressRepo>();
 builder.Services.AddScoped<ICartRepo, CartRepo>();
 builder.Services.AddScoped<IContactUsRepo, ContactUsRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 #endregion
 
 #region Mapper

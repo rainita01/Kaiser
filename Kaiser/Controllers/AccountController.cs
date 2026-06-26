@@ -3,6 +3,8 @@ using System.Security.Claims;
 using Core_Layer.Dtos.AccountDto;
 using Core_Layer.Dtos.AddressDto;
 using Core_Layer.Repository.Address;
+
+using Core_Layer.Repository.User;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +14,12 @@ using Microsoft.EntityFrameworkCore;
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class AccountController(UserManager<User> userManager,SignInManager<User> signInManager,IAddressRepo addressRepo,RoleManager<Role> roleManager) : ControllerBase
+public class AccountController(UserManager<User> userManager,
+    SignInManager<User> signInManager,
+    IAddressRepo addressRepo,
+    RoleManager<Role> roleManager,
+    IUserRepo userRepo
+    ) : ControllerBase
 {
     [HttpPost("/Account/Login")]
     public async Task<IActionResult> Login([FromBody]LoginUserDto dto)
@@ -62,17 +69,10 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
 
     [Authorize(Roles = "admin")]
     [HttpGet("UserManager")]
-    public IActionResult UserManager()
+    public async Task<IActionResult> UserManager()
     {
-        var users = userManager.Users.Select(e => new UserDto()
-        {
-            Id = e.Id,
-            Firstname = e.FirstName,
-            Lastname = e.LastName,
-            Username = e.UserName,
-            PhoneNumber = e.PhoneNumber
-        }).ToList();
-        return Ok(users);
+        var result = await userRepo.GetUsersWithRoles();
+        return Ok(result);
     }
 
     [Authorize(Roles = "admin")]
@@ -233,30 +233,6 @@ public class AccountController(UserManager<User> userManager,SignInManager<User>
             =>new RoleDto(){Id = e.Id,Name = e.Name}).ToListAsync();
         return Ok(roles);
     }
-    //[HttpGet("RoleManager/GetRolesUsers")]
-    //public async Task<IActionResult> GetUsersRoles()
-    //{
-    //    var data = await userManager.Users
-    //        .SelectMany(
-    //            u => u.Roles,(user, role) => new
-    //            {
-    //                RoleName = role.Name,
-    //                User = new UserNameWithIdDto
-    //                {
-    //                    Id = user.Id,
-    //                    Username = user.UserName
-    //                }
-    //            })
-    //        .ToListAsync();
-    //    var result = data.GroupBy(e => e.RoleName)
-    //        .Select(e => new RolesWithUsers()
-    //        {
-    //            RoleName = e.Key,
-    //            Users = e.Select(s => s.User).ToList()
-    //        }).ToList();
-
-    //    return Ok(result);
-    //}
     [Authorize(Roles = "admin")]
     [HttpPost("RoleManager/AddRole")]
     public async Task<IActionResult> AddRole(string name)
