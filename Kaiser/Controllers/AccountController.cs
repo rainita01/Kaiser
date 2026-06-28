@@ -276,4 +276,5 @@ public class AccountController(UserManager<User> userManager,
         return BadRequest(result.Errors.ToString());
 
     }
+    
 }

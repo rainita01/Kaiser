@@ -13,9 +13,9 @@ public class User :IdentityUser
     public string? LastName { get; set; }
 
     #region Relations
-
+        
     public List<Role>? Roles { get; set; }   
-    public List<Review>? Reviews { get; set; }
+    public List<Comment>? Comments { get; set; }
     public List<Order>? Orders { get; set; }
     public List<Cart>? Carts { get; set; }
     public List<Address>? Addresses { get; set; }    

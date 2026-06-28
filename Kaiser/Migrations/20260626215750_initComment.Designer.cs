@@ -4,6 +4,7 @@ using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kaiser.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20260626215750_initComment")]
+    partial class initComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,14 +168,11 @@ namespace Kaiser.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ParentId")
+                    b.Property<int>("ParrentId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("SendDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -185,7 +185,7 @@ namespace Kaiser.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParrentId");
 
                     b.HasIndex("ProductId");
 
@@ -702,10 +702,11 @@ namespace Kaiser.Migrations
 
             modelBuilder.Entity("Data_Layer.Entities.Comment", b =>
                 {
-                    b.HasOne("Data_Layer.Entities.Comment", "Parent")
+                    b.HasOne("Data_Layer.Entities.Comment", "Parrent")
                         .WithMany("Replays")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ParrentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Data_Layer.Entities.Product", "Product")
                         .WithMany("Comments")
@@ -719,7 +720,7 @@ namespace Kaiser.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Parent");
+                    b.Navigation("Parrent");
 
                     b.Navigation("Product");
 

@@ -5,7 +5,6 @@ using Core_Layer.Repository.Category;
 using Core_Layer.Repository.ContactUs;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Product;
-using Core_Layer.Repository.Role;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.ImageServices;

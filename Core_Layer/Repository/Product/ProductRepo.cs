@@ -151,7 +151,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
 
     }
 
-    public async Task<UpdateProductDto>? GetUpdateProductAsync(int id)
+    public async Task<UpdateProductDto> GetUpdateProductAsync(int id)
     {
         var product = await context.Products.Include(e => e.Images).FirstOrDefaultAsync(e => e.Id == id);
         var productDto = mapper.Map<UpdateProductDto>(product);

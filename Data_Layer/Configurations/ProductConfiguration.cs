@@ -14,6 +14,10 @@ public class ProductConfiguration :IEntityTypeConfiguration<Product>
         builder.HasMany(e=>e.ProductViews)
             .WithOne(e => e.Product)
             .HasForeignKey(e => e.ProductId);
+        builder.HasMany(e => e.Comments)
+            .WithOne(e => e.Product)
+            .HasForeignKey(e => e.ProductId);
+
     }
     
 }

@@ -82,12 +82,8 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     [Authorize(Roles = "admin")]
     public async Task<IActionResult> Edit(int id)
     {
-        UpdateProductDto result = await productRepo.GetUpdateProductAsync(id);
-        if (result == null)
-        {
-            return NotFound($"Product with id {id} not found");
-        }
-
+        var result = await productRepo.GetUpdateProductAsync(id);
+        
         return Ok(result);
     }
 

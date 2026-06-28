@@ -14,7 +14,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(e=>e.Carts)
             .WithOne(e=>e.User)
             .HasForeignKey(e => e.UserId);
-        builder.HasMany(e => e.Reviews)
+        builder.HasMany(e => e.Comments)
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId);
         builder.HasMany(e => e.Roles)
