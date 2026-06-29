@@ -62,8 +62,8 @@ public class AccountController(UserManager<User> userManager,
     [HttpPost("Account/LogOut")]
     public async Task<IActionResult> LogOut()
     {
-       await signInManager.SignOutAsync();
-        return base.SignOut();  
+      await signInManager.SignOutAsync();
+      return Ok("با موفقیت خروج یافت");
     }
    
 
