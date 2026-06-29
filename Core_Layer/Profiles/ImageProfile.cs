@@ -9,8 +9,7 @@ public class ImageProfile : Profile
     public ImageProfile()
     {
         CreateMap<Image, ImageDto>()
-            .ForMember(e=>e.ImageName,s=>s.MapFrom(e=>e.Name))
-            ;
+            .ForMember(e=>e.ImageName,s=>s.MapFrom(e=>e.Name));
 
     }
 }
