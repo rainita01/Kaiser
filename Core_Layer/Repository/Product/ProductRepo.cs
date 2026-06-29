@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Core_Layer.Dtos.Comment;
 using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Repository.Image;
@@ -143,17 +144,23 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
 
     public async Task<ProductDto> GetProductAsync(int id)
     {
-        var product = await context.Products.Include(e=>e.Images).FirstOrDefaultAsync(e => e.Id == id);
-        var productDto =  mapper.Map<ProductDto>(product);
-        productDto.Images = mapper.Map<List<ImageDto>>(product.Images);
-        productDto.Views = await viewsRepo.GetPageViewsCount(id);
-        return productDto;
+        var product = await context.Products
+            .AsNoTracking()
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (product == null)
+            throw new NullReferenceException();
+        product.Views = await viewsRepo.GetPageViewsCount(id);
+        return product;
 
     }
 
     public async Task<UpdateProductDto> GetUpdateProductAsync(int id)
     {
-        var product = await context.Products.Include(e => e.Images).FirstOrDefaultAsync(e => e.Id == id);
+        var product = await context.Products
+            .Include(e => e.Images)
+            .FirstOrDefaultAsync(e => e.Id == id);
         var productDto = mapper.Map<UpdateProductDto>(product);
         productDto.Images = mapper.Map<List<ImageDto>>(product.Images);
         return productDto;

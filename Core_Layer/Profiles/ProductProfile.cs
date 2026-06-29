@@ -16,7 +16,6 @@ public class ProductProfile : Profile
             .ForMember(e=>e.Views ,s=>s.MapFrom(p => p.ProductViews != null ? (long)p.ProductViews.Count() : 0));
         CreateMap<Product, UpdateProductDto>();
         CreateMap<Product, ProductDto>()
-            .ForMember(e => e.Images, s => s.Ignore())
             .ForMember(e => e.Views, s => s.Ignore());
 
     }

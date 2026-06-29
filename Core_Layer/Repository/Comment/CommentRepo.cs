@@ -52,11 +52,14 @@ public class CommentRepo(Context context,IMapper mapper) : ICommentRepo
             .ToListAsync();
     }
 
-    public async Task<List<CommentDto>> ProductCommentsAsync(int productId)
+    public async Task<List<CommentDto>> ProductCommentsAsync(int productId,int? totalCounts,int pageNumber= 1)
     {   
         return await context.Comments
             .AsNoTracking()
+            .Skip((pageNumber - 1) * 10)
+            .Take(totalCounts ?? 10)
             .Where(e => e.IsApproved && e.ProductId == productId)
+            .OrderBy(e=>e.SendDate)
             .ProjectTo<CommentDto>(mapper.ConfigurationProvider)
             .ToListAsync();
     }

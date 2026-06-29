@@ -8,7 +8,7 @@ public interface ICommentRepo
     public Task<ActionResult> DeleteAsync(int id);
 
     public Task<List<CommentDto>> GetAllAsync();
-    public Task<List<CommentDto>> ProductCommentsAsync(int productId);
+    public Task<List<CommentDto>> ProductCommentsAsync(int productId, int? totalCounts, int pageNumber = 1);
     public Task<ActionResult> ApproveOrDisApproveCommentAsync(ApproveOrDisApproveCommentDto dto);
 
 }

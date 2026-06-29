@@ -1,4 +1,5 @@
-﻿using Core_Layer.Dtos.ImageDto;
+﻿using Core_Layer.Dtos.Comment;
+using Core_Layer.Dtos.ImageDto;
 
 namespace Core_Layer.Dtos.Product;
 
@@ -17,7 +18,7 @@ public class ProductDto
     public long Views { get; set; }
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
-    public List<ImageDto.ImageDto> Images { get; set; }
+    public List<ImageDto.ImageDto>? Images { get; set; }
     public DateTime CreateTime { get; set; }
 
 }
