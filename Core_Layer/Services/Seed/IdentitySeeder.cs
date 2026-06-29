@@ -16,7 +16,7 @@ public class IdentitySeeder
         {
             await roleManager.CreateAsync(new Role(){Name = "admin"});
         }
-        var admin = await userManager.FindByEmailAsync("admin@test.com");
+        var admin = await userManager.FindByNameAsync("Sysadmin");
 
         if (admin is null)
         {
