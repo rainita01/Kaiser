@@ -15,6 +15,7 @@ public class CommentRepo(Context context,IMapper mapper) : ICommentRepo
        
             var comment = mapper.Map<Data_Layer.Entities.Comment>(model);
             comment.UserId = userId;
+            
             await context.Comments.AddAsync(comment);
             await context.SaveChangesAsync();
 

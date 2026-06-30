@@ -12,6 +12,8 @@ public class CommentProfile : Profile
             .ForMember(e => e.UserId, s => s.Ignore())
             .ForMember(e => e.User, s => s.Ignore())
             .ForMember(e => e.Replays, s => s.Ignore());
-        CreateMap<Comment, CommentDto>();
+        CreateMap<Comment, CommentDto>()
+            .ForMember(x => x.Writer,
+                x => x.MapFrom(c => c.User.FirstName + " " + c.User.LastName));
     }
 }
