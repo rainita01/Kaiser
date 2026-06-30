@@ -2,5 +2,6 @@
 
 public interface IOrderRepo
 {
+    public Task<bool> ValidationCheckAsync(string userId);
     
 }

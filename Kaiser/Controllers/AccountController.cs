@@ -57,6 +57,12 @@ public class AccountController(UserManager<User> userManager,
         
         return BadRequest(result.ToString());
     }
+    [Authorize(Roles = "admin")]
+    [HttpGet("check")]
+    public IActionResult Check()
+    {
+        return Ok();
+    }
 
     [Authorize]
     [HttpPost("Account/LogOut")]

@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.Comment;
-using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
-using Data_Layer.Entities;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace Core_Layer.Repository.Product;
@@ -34,7 +31,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
                     var result = await imageRepo.AddAsync(image, model.Id);
                     if (!result.Success)
                     {
-                        return ActionResult.Failed(result.Message);
+                        return ActionResult.Failed(result.Message!);
                     }
                 }
 
@@ -70,13 +67,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             product.IsBestSell = dto.IsBestSell ?? product.IsBestSell;
             product.Price = dto.Price ?? product.Price;
             product.StockQuantity = dto.StockQuantity ?? product.StockQuantity;
-            if (dto.Images != null)
-            {
-                foreach (var image in dto.Images)        
-                {
-                    
-                }
-            }
+           
             await context.SaveChangesAsync();
             return ActionResult.Completed();
         }
@@ -127,7 +118,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         // اعمال مرتب‌سازی در دیتابیس
         query = sort switch
         {
-            SortProduct.MostViewed => query.OrderByDescending(e => e.ProductViews.Count()),
+            SortProduct.MostViewed => query.OrderByDescending(e => e.ProductViews!.Count),
             SortProduct.PriceAsc => query.OrderBy(e => e.Price),
             SortProduct.PriceDesc => query.OrderByDescending(e => e.Price),
             SortProduct.Newest => query.OrderByDescending(e=>e.CreateTime),
@@ -162,7 +153,6 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             .Include(e => e.Images)
             .FirstOrDefaultAsync(e => e.Id == id);
         var productDto = mapper.Map<UpdateProductDto>(product);
-        productDto.Images = mapper.Map<List<ImageDto>>(product.Images);
         return productDto;
     }
     private async Task<Data_Layer.Entities.Product?> GetProduct(int id)
