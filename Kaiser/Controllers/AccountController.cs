@@ -58,7 +58,7 @@ public class AccountController(UserManager<User> userManager,
         return BadRequest(result.ToString());
     }
     [Authorize(Roles = "admin")]
-    [HttpGet("check")]
+    [HttpGet("Account/AdminCheck")]
     public IActionResult Check()
     {
         return Ok();
