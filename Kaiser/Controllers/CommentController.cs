@@ -1,14 +1,17 @@
 ﻿using System.Security.Claims;
 using Core_Layer.Dtos.Comment;
 using Core_Layer.Repository.Comment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
 public class CommentController(ICommentRepo commentRepo) : ControllerBase
 {
-
+    
+    
     [HttpGet("CommentManager/Comments")]
+    [Authorize(Roles = "admin")]
   public async Task<IActionResult> GetComments()
   { 
       var result = await commentRepo.GetAllAsync();
@@ -27,7 +30,8 @@ public class CommentController(ICommentRepo commentRepo) : ControllerBase
     }
   
     [HttpPost("AddComment")]
-  public async Task<IActionResult> AddComment([FromBody]AddCommentDto dto)
+    [Authorize]
+    public async Task<IActionResult> AddComment([FromBody]AddCommentDto dto)
   {
       if (!ModelState.IsValid)
           return BadRequest("مدل شما کامل نیست");
@@ -42,6 +46,8 @@ public class CommentController(ICommentRepo commentRepo) : ControllerBase
           return Ok();
       return BadRequest(result.Message);
   }
+
+    [Authorize(Roles = "admin")]
     [HttpDelete("CommentManager/DeleteComment")]
   public async Task<IActionResult> RemoveComment(int commentId)
   {
@@ -50,7 +56,7 @@ public class CommentController(ICommentRepo commentRepo) : ControllerBase
           return Ok();
       return BadRequest(result.Message);
   }
-
+    [Authorize(Roles = "admin")]
     [HttpPut("CommentManager/ApproveOrDisApproveComment")]
   public async Task<IActionResult> ApproveOrDissApproveComment([FromBody]ApproveOrDisApproveCommentDto dto)
   {
