@@ -29,8 +29,8 @@ public class Order
 
 public enum OrderStatus
 {
-    Pending,
-    Shipping,
-    Delivered,
-    Canceled    
+    Pending=0,
+    Shipping=1,
+    Delivered=2,
+    Canceled=3    
 }

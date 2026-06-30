@@ -7,6 +7,7 @@ public class CommentDto
     public string Writer { get; set; }
     public int ProductId { get; set; }  
     public int? ParentId { get; set; }
+    public bool IsApproved { get; set; }
     public DateTime CreateDate { get; set; }    
 
 }

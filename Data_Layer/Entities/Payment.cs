@@ -12,7 +12,7 @@ public class Payment
 
 
     #region Relations
-    [Required]
+    public int OrderId { get; set; }
     public Order Order { get; set; }
 
     #endregion
