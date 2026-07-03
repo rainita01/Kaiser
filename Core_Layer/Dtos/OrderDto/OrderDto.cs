@@ -2,6 +2,8 @@
 
 namespace Core_Layer.Dtos.OrderDto;
 
+using AddressDto;
+
 public class OrderDto
 {
     public int Id { get; set; }
@@ -11,5 +13,6 @@ public class OrderDto
     public int AddressId { get; set; }
     public int  PaymentId { get; set; }
     public string UserId { get; set; }
+    public AddressDto Address { get; set; }
     public List<OrderItemDto> List { get; set; }
 }

@@ -12,7 +12,12 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetMyCarts()
     {
-        var result = await cartRepo.GetUserCartItemsAsync(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return BadRequest("لطفا اول وارد شوید ");
+        }
+        var result = await cartRepo.GetUserCartItemsAsync(userId);
         return Ok(result);
 
     }

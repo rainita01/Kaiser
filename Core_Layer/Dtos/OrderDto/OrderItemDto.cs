@@ -1,4 +1,5 @@
-﻿namespace Core_Layer.Dtos.OrderDto;
+﻿
+namespace Core_Layer.Dtos.OrderDto;
 
 public class OrderItemDto
 {
@@ -8,4 +9,5 @@ public class OrderItemDto
     public string ProductName { get; set; }
     public int OrderId { get; set; }
     public long TotalPrice => UnitPrice * Quantity;
+    
 }

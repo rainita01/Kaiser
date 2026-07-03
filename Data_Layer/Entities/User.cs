@@ -18,8 +18,8 @@ public class User :IdentityUser
     public List<Comment>? Comments { get; set; }
     public List<Order>? Orders { get; set; }
     public List<Cart>? Carts { get; set; }
-    public List<Address>? Addresses { get; set; }    
-    
+    public List<Address>? Addresses { get; set; }
 
+    public List<SnapShot> SnapShots { get; set; }
     #endregion
 }

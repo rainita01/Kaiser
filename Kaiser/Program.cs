@@ -5,6 +5,7 @@ using Core_Layer.Repository.Category;
 using Core_Layer.Repository.Comment;
 using Core_Layer.Repository.ContactUs;
 using Core_Layer.Repository.Image;
+using Core_Layer.Repository.Order;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
@@ -48,6 +49,7 @@ builder.Services.AddScoped<ICartRepo, CartRepo>();
 builder.Services.AddScoped<IContactUsRepo, ContactUsRepo>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 #endregion
 
 #region Mapper
@@ -60,6 +62,7 @@ builder.Services.AddAutoMapper(mapp =>
     mapp.AddProfile<AddressProfile>();
     mapp.AddProfile<ContactUsProfile>();
     mapp.AddProfile<CommentProfile>();
+    mapp.AddProfile<CartAndSnapShotProfile>();
 });
 
 #endregion

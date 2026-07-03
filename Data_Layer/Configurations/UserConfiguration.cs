@@ -21,5 +21,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithMany(e => e.Users);
         builder.HasMany(e => e.Addresses)
             .WithOne(e => e.User);
+        builder.HasMany(e => e.SnapShots)
+            .WithOne(e => e.User)
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

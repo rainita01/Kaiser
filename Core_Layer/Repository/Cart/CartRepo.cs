@@ -139,11 +139,32 @@ public class CartRepo(Context context,IImageRepo imageRepo) :ICartRepo
                 Price = ci.Product.Price,
                 ProductId = ci.ProductId,
                 Quantity = ci.Quantity,
-                ImageName =  ci.Product.Images.FirstOrDefault().Name,
+                ImageName =  ci.Product.Images.FirstOrDefault().Name ,
                 UserId = userId
             }).ToListAsync();
 
         return cartItems;
 
+    }
+
+    public async Task<ActionResult> ClearCartAsync(string userId)
+    {
+        try
+        {
+            var result = await context.Carts.Include(e => e.CartItems)
+                .FirstOrDefaultAsync(e => e.UserId == userId);
+            if (result != null && result.CartItems != null)
+            {
+                context.RemoveRange(result.CartItems);
+                await context.SaveChangesAsync();
+                return ActionResult.Completed();
+            }
+
+            return ActionResult.Failed("کارتی وجود نداشت");
+        }
+        catch (Exception e)
+        {
+            return ActionResult.Failed(e.Message);
+        }
     }
 }
