@@ -4,6 +4,7 @@ using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kaiser.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20260706081437_finalize-transaction-payment-01")]
+    partial class finalizetransactionpayment01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,22 +266,13 @@ namespace Kaiser.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("OrderTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("ShippingCost")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("SnapShotId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("State")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<long>("TotalPrice")
+                    b.Property<long>("TotalAmount")
                         .HasColumnType("bigint");
 
                     b.Property<string>("UserId")
@@ -288,12 +282,6 @@ namespace Kaiser.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
-
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
-
-                    b.HasIndex("SnapShotId")
-                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -307,9 +295,6 @@ namespace Kaiser.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("Discount")
                         .HasPrecision(5, 2)
@@ -328,6 +313,9 @@ namespace Kaiser.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.Property<long>("UnitPrice")
                         .HasColumnType("bigint");
 
@@ -342,9 +330,11 @@ namespace Kaiser.Migrations
 
             modelBuilder.Entity("Data_Layer.Entities.Payment", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<long>("Amount")
                         .HasColumnType("bigint");
@@ -355,17 +345,14 @@ namespace Kaiser.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RefId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("SnapShotId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("VerifiedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -499,7 +486,14 @@ namespace Kaiser.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Authorize")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
 
                     b.Property<long>("ShippingCost")
@@ -557,6 +551,57 @@ namespace Kaiser.Migrations
                     b.HasIndex("SnapShotId");
 
                     b.ToTable("SnapShotItems");
+                });
+
+            modelBuilder.Entity("Data_Layer.Entities.Transaction", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AdditionalData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CardHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardPan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("Fee")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FeeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("RefId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("Succeed")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.User", b =>
@@ -839,18 +884,6 @@ namespace Kaiser.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Data_Layer.Entities.Payment", "Payment")
-                        .WithOne()
-                        .HasForeignKey("Data_Layer.Entities.Order", "PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data_Layer.Entities.SnapShot", "SnapShot")
-                        .WithOne()
-                        .HasForeignKey("Data_Layer.Entities.Order", "SnapShotId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Data_Layer.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -859,17 +892,13 @@ namespace Kaiser.Migrations
 
                     b.Navigation("Address");
 
-                    b.Navigation("Payment");
-
-                    b.Navigation("SnapShot");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.OrderItem", b =>
                 {
                     b.HasOne("Data_Layer.Entities.Order", "Order")
-                        .WithMany("Items")
+                        .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -946,6 +975,17 @@ namespace Kaiser.Migrations
                         .IsRequired();
 
                     b.Navigation("SnapShot");
+                });
+
+            modelBuilder.Entity("Data_Layer.Entities.Transaction", b =>
+                {
+                    b.HasOne("Data_Layer.Entities.Payment", "Payment")
+                        .WithMany("Transactions")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1036,7 +1076,12 @@ namespace Kaiser.Migrations
 
             modelBuilder.Entity("Data_Layer.Entities.Order", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Data_Layer.Entities.Payment", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.Product", b =>

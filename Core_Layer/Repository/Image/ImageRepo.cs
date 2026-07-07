@@ -6,6 +6,7 @@ using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Http;
+using Transaction = System.Transactions.Transaction;
 
 namespace Core_Layer.Repository.Image;
 

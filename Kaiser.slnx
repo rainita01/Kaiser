@@ -1,4 +1,20 @@
 <Solution>
+  <Project Path="C:/Users/hRain/Desktop/H2testw.1.4_Soft98.ir.exe">
+    <BuildType Project="Release" />
+    <Platform Project="x86" />
+    <Properties Name="DebuggerProjectSystem">
+      <Property Name="AttachLaunchAction" Value="No" />
+      <Property Name="Environment" Value="Default" />
+      <Property Name="Executable" Value="C:\Users\hRain\Desktop\H2testw.1.4_Soft98.ir.exe" />
+      <Property Name="IORedirection" Value="Auto" />
+      <Property Name="LaunchingEngine" Value="00000000-0000-0000-0000-000000000000" />
+      <Property Name="LaunchSQLEngine" Value="No" />
+      <Property Name="PortSupplier" Value="00000000-0000-0000-0000-000000000000" />
+      <Property Name="RemoteMachine" Value="DESKTOP-PF5KN56" />
+      <Property Name="StartingDirectory" Value="C:\Users\hRain\Desktop" />
+      <Property Name="UseLegacyDebugEngines" Value="No" />
+    </Properties>
+  </Project>
   <Project Path="Core_Layer/Core_Layer.csproj" Id="e7aff885-a20f-4b4d-afcd-60327861aa02" />
   <Project Path="Data_Layer/Data_Layer.csproj" Id="9703a041-046b-4b3d-af37-4321bbc2165f" />
   <Project Path="Kaiser/Kaiser.csproj" />

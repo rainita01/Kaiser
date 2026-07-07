@@ -9,21 +9,30 @@ using Core_Layer.Repository.Order;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
+using Core_Layer.Services.Api;
+using Core_Layer.Services.CheckOut;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
 using Core_Layer.Services.Seed;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Data_Layer.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using Parbad.Builder;
+using Parbad.Gateway.ZarinPal;
+using Parbad.Storage.EntityFrameworkCore;
+using Parbad.Storage.EntityFrameworkCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -36,6 +45,7 @@ builder.Services.AddDbContext<Context>(e =>
 
 builder.Services.AddScoped<ImageServices>();
 builder.Services.AddScoped<TextServices>();
+builder.Services.AddScoped<ICheckOutServices, CheckoutService>();
 
 #endregion
 #region Repositories
@@ -63,9 +73,16 @@ builder.Services.AddAutoMapper(mapp =>
     mapp.AddProfile<ContactUsProfile>();
     mapp.AddProfile<CommentProfile>();
     mapp.AddProfile<CartAndSnapShotProfile>();
+    mapp.AddProfile<OrderProfile>();
 });
 
 #endregion
+
+builder.Services.AddHttpClient<IZarinPalServices, ZarinPalServices>(client =>
+{
+    client.BaseAddress = new Uri("https://sandbox.zarinpal.com/");
+});
+
 builder.Services.AddIdentity<User, Role>(option =>
     {
         option.SignIn.RequireConfirmedAccount = false;

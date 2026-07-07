@@ -1,6 +1,7 @@
 ﻿
 using System.Data.SqlTypes;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.OrderDto;
 using Core_Layer.Dtos.SnapShotDto;
 using Data_Layer.Context;
@@ -11,51 +12,46 @@ namespace Core_Layer.Repository.Order;
 
 public class OrderRepo(Context context,IMapper mapper) : IOrderRepo
 {
-    public async Task<SnapShotDto> CheckOutAsync(string userId,int addressId)
+
+
+    public Task<ActionResult> PaymentResponseAsync()
     {
-        var cart = await context.Carts
+        throw new NotImplementedException();
+    }
+
+    public Task<SnapShotDto> AddAsync(string userId, int addressId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ActionResult> RemoveAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<OrderDto>> GetOrderListAsync(string userId)
+    {
+        return await context.Orders
             .AsNoTracking()
-            .Include(e=>e.CartItems)
-            .ThenInclude(e=>e.Product)
-            .FirstOrDefaultAsync(c => c.UserId == userId);
-        if (cart == null || cart.CartItems == null)
-            throw new FileNotFoundException("کارتی پیدا نشد");
-        var address = await context.Addresses
-            .FindAsync(addressId);
-        if (address == null)
-            throw new SqlNullValueException("ادرس پیدا نشد");
+            .Where(e => e.UserId == userId)
+            .ProjectTo<OrderDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
 
-        var snapshot = new SnapShotDto()
+    public async Task<ActionResult> CreateOrderAsync(AddOrderDto dto, string userId)
+    {
+        try
         {
-            AddressId = addressId,
-            Items = mapper.Map<List<SnapShotItemDto>>(cart.CartItems),
-            ShippingCost = 1000000,
-            State = SnapShotState.Pending,
-            UserId = userId
-        };
+            var order = mapper.Map<Data_Layer.Entities.Order>(dto);
 
-        long totalPrice = 0;
-        foreach (var item in snapshot.Items)
-        {
-            totalPrice += item.UnitPrice;
+            order.UserId = userId;
+            await context.Orders.AddAsync(order);
+            return ActionResult.Completed();
         }
-        snapshot.TotalPrice = totalPrice;
-        return snapshot;
+        catch (Exception e)
+        {
+            return ActionResult.Failed(e.Message);
+        }
 
-    }
-
-    public Task<ActionResult> ChangeOrderStateAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<OrderDto>> GetOrderListAsync(string userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<AddOrderDto> CreateOrderAsync(AddOrderDto dto, string userId)
-    {
-        throw new NotImplementedException();
     }
 }

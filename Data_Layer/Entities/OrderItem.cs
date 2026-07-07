@@ -5,10 +5,10 @@ namespace Data_Layer.Entities;
 
 public class OrderItem : BaseEntity 
 {
-    [Required]
-    public int Quantity { get; set; }
-    [Required]
-    public long UnitPrice { get; set; }  
+    public string ProductName { get; set; }
+    public long UnitPrice { get; set; }
+    public decimal Discount { get; set; }
+    public int Count { get; set; }
 
     #region Relations
 

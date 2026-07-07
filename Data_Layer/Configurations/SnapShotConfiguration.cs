@@ -10,11 +10,17 @@ public class SnapShotConfiguration :IEntityTypeConfiguration<SnapShot>
     {
         builder.HasMany(e => e.Items)
             .WithOne(e => e.SnapShot)
-            .HasForeignKey(e => e.SnapShotId);
+            .HasForeignKey(e => e.SnapShotId)
+            .OnDelete(DeleteBehavior.Cascade)
+            ;
         builder.HasOne(e => e.Address)
             .WithMany()
             .HasForeignKey(e => e.AddressId);
-        
+        builder.HasOne(s => s.Payment)
+            .WithOne(p => p.SnapShot)
+            .HasForeignKey<Payment>(p => p.SnapShotId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 }
 public class SnapShotItemConfiguration : IEntityTypeConfiguration<SnapShotItem>

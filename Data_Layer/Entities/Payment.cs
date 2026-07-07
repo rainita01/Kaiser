@@ -4,24 +4,15 @@ namespace Data_Layer.Entities;
 
 public class Payment
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
+    public SnapShot SnapShot { get; set; }
+    public Guid SnapShotId { get; set; }
     public long Amount { get; set; }
-    public string TransactionId { get; set; }
-    public string PaymentMethod { get; set; }   
-    public PaymentStatus Status { get; set; }
-
-
-    #region Relations
-    public int OrderId { get; set; }
-    public Order Order { get; set; }
-
-    #endregion
+    public string? Authority { get; set; }
+    public string? RefId { get; set; }
+    public PaymentState State { get; set; } // Requested, Succeeded, Failed
+    public DateTime CreatedAt { get; set; }
+    public DateTime? VerifiedAt { get; set; }
 }
 
-public enum PaymentStatus
-{
-    Success,
-    Failed,
-    Refunded
-
-}
+public enum PaymentState { Requested, Succeeded, Failed }

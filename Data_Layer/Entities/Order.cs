@@ -4,33 +4,24 @@ namespace Data_Layer.Entities;
 
 public class Order 
 {
-    [Key]
     public int Id { get; set; }
-    [Required]
-    public DateTime OrderTime { get; set; }
-    [Required]
-    public OrderStatus Status { get; set; }
-    [Required]
-    public long TotalAmount { get; set; }
-
+    public List<OrderItem> Items { get; set; }
+    public long ShippingCost { get; set; }
+    public long TotalPrice { get; set; }
+    public OrderState State { get; set; } // Paid, Processing, Shipped, Delivered, Cancelled
+    public DateTime CreatedAt { get; set; }
     #region Relations
 
     public int AddressId { get; set; }
-    public Address Address { get; set; }
-
-    public int PaymentId { get; set; }
-    public Payment Payment { get; set; }    
-    public List<OrderItem> OrderItems { get; set; }
+    public Address Address { get; set; } = new Address();
+    public Guid SnapShotId { get; set; }
+    public SnapShot SnapShot { get; set; }  
+    public Guid PaymentId { get; set; }
+    public Payment Payment { get; set; }
     public string UserId { get; set; }
     public User User { get; set; }  
 
     #endregion
 }
 
-public enum OrderStatus
-{
-    Pending=0,
-    Shipping=1,
-    Delivered=2,
-    Canceled=3    
-}
+public enum OrderState { Paid, Processing, Shipped, Delivered, Cancelled }

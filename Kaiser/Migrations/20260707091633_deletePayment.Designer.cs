@@ -4,6 +4,7 @@ using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kaiser.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20260707091633_deletePayment")]
+    partial class deletePayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -289,9 +292,6 @@ namespace Kaiser.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
-
                     b.HasIndex("SnapShotId")
                         .IsUnique();
 
@@ -338,41 +338,6 @@ namespace Kaiser.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
-                });
-
-            modelBuilder.Entity("Data_Layer.Entities.Payment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("Amount")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Authority")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RefId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("SnapShotId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("VerifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SnapShotId")
-                        .IsUnique();
-
-                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.Product", b =>
@@ -839,12 +804,6 @@ namespace Kaiser.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Data_Layer.Entities.Payment", "Payment")
-                        .WithOne()
-                        .HasForeignKey("Data_Layer.Entities.Order", "PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Data_Layer.Entities.SnapShot", "SnapShot")
                         .WithOne()
                         .HasForeignKey("Data_Layer.Entities.Order", "SnapShotId")
@@ -858,8 +817,6 @@ namespace Kaiser.Migrations
                         .IsRequired();
 
                     b.Navigation("Address");
-
-                    b.Navigation("Payment");
 
                     b.Navigation("SnapShot");
 
@@ -883,17 +840,6 @@ namespace Kaiser.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Data_Layer.Entities.Payment", b =>
-                {
-                    b.HasOne("Data_Layer.Entities.SnapShot", "SnapShot")
-                        .WithOne("Payment")
-                        .HasForeignKey("Data_Layer.Entities.Payment", "SnapShotId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("SnapShot");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.Product", b =>
@@ -1051,8 +997,6 @@ namespace Kaiser.Migrations
             modelBuilder.Entity("Data_Layer.Entities.SnapShot", b =>
                 {
                     b.Navigation("Items");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.User", b =>
