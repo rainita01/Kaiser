@@ -24,8 +24,8 @@ public class OrderProfile : Profile
             .ForMember(dest => dest.OrderId, opt => opt.Ignore())
             .ForMember(dest => dest.Order, opt => opt.Ignore())
             .ForMember(dest => dest.Product, opt => opt.Ignore());
-        CreateMap<AddOrderDto, Order>();
-        CreateMap<AddOrderItemDto, OrderItemDto>();
+
+
         CreateMap<Order, OrderDto>()
             .ForMember(dest => dest.CreatedAt,
                 opt => opt.MapFrom(src => src.CreatedAt))
