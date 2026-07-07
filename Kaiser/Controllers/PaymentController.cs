@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Core_Layer.Services.CheckOut;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kaiser.Controllers;
 
+[Authorize]
 public class PaymentController(ICheckOutServices checkOutServices) : ControllerBase
 {
         [HttpPost("Payment/CheckOut")]
@@ -30,7 +32,8 @@ public class PaymentController(ICheckOutServices checkOutServices) : ControllerB
             [FromQuery]string status)
         {
         var result = await checkOutServices.HandleCallbackAsync(paymentId, authority, status);
-        // redirect to a frontend result page rather than returning raw JSON to the browser
+  
+
          return Ok(result);
         }
 

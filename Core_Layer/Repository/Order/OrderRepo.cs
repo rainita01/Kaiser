@@ -1,32 +1,29 @@
-﻿
-using System.Data.SqlTypes;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.OrderDto;
-using Core_Layer.Dtos.SnapShotDto;
 using Data_Layer.Context;
-using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
-
 namespace Core_Layer.Repository.Order;
 
 public class OrderRepo(Context context,IMapper mapper) : IOrderRepo
 {
 
-
-    public Task<ActionResult> PaymentResponseAsync()
+    public async Task<ActionResult> RemoveAsync(int orderId)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<SnapShotDto> AddAsync(string userId, int addressId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<ActionResult> RemoveAsync()
-    {
-        throw new NotImplementedException();
+        try
+        {
+            var order = await context.Orders.FindAsync(orderId);
+            if (order == null)
+                return ActionResult.Failed("سفارش پیدا نشد");
+          
+            context.Orders.Remove(order);
+            await context.SaveChangesAsync();
+            return ActionResult.Completed();
+        }
+        catch (Exception e)
+        {
+            return ActionResult.Failed(e.Message);
+        }
     }
 
     public async Task<List<OrderDto>> GetOrderListAsync(string userId)
@@ -34,6 +31,15 @@ public class OrderRepo(Context context,IMapper mapper) : IOrderRepo
         return await context.Orders
             .AsNoTracking()
             .Where(e => e.UserId == userId)
+            .ProjectTo<OrderDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
+    public async Task<List<OrderDto>> GetAllOrderListAsync()
+    {
+        return await context.Orders
+            .AsNoTracking()
+            .OrderByDescending(e=>e.CreatedAt)
             .ProjectTo<OrderDto>(mapper.ConfigurationProvider)
             .ToListAsync();
     }
