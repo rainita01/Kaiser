@@ -95,7 +95,7 @@ public class CheckoutService(
         {
             Id = Guid.NewGuid(),
             SnapShotId = snapshot.Id,
-            Amount = snapshot.TotalPrice - 1999205600000,
+            Amount = snapshot.TotalPrice ,
             State = PaymentState.Requested,
             CreatedAt = DateTime.UtcNow
         };
@@ -103,7 +103,7 @@ public class CheckoutService(
         var request = await zarinPal.RequestAsync(new ZarinPalRequestDto()
             {
                 MerchantId = "9026f668-323b-416c-94a6-54fdc65b4d34",
-                Amount = snapshot.TotalPrice - 1999205600000,
+                Amount = snapshot.TotalPrice,
                 Description = $"پرداخت سفارش {snapshot.Id}",
                 CallbackUrl = $"https://localhost:7259/Payment/Callback?paymentId={payment.Id}",
             });
