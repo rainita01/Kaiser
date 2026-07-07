@@ -270,9 +270,15 @@ public class AccountController(UserManager<User> userManager,
     [HttpPut("Account/Profile/ChangePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return BadRequest("لطفا اول وارد شوید");
+        }
+
         if (!ModelState.IsValid)
             return BadRequest("مدل ناقص میباشد");
-        var user = await userManager.FindByIdAsync(dto.UserId);
+        var user = await userManager.FindByIdAsync(userId);
         if (user == null)
             return BadRequest("عوض کردن رمز موفقیت امیز نبود");
         var result = await userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
