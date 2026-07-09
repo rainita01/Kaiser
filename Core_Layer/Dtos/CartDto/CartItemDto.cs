@@ -1,4 +1,6 @@
-﻿namespace Core_Layer.Dtos.CartDto;
+﻿using Core_Layer.Dtos.Product;
+
+namespace Core_Layer.Dtos.CartDto;
 
 public class CartItemDto
 {
@@ -10,4 +12,5 @@ public class CartItemDto
     public long Price { get; set; }
     public int Quantity { get; set; }
     public int DiscountPercent { get; set; }
+    public ProductDto Product { get; set; }
 }

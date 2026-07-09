@@ -11,6 +11,7 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
 {
 
     [HttpGet("/CategoryManager")]
+    [AllowAnonymous]
     public async Task<IActionResult> CategoryManager()
     {
         var categories = await categoryRepo.GetCategoriesAsync();

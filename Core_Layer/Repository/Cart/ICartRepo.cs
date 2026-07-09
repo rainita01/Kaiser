@@ -9,5 +9,6 @@ public interface ICartRepo
     public Task<ActionResult> IncreaseQuantityAsync(int cardItemId); 
     public Task<ActionResult> DecreaseQuantityAsync(int cardItemId);
     public Task<List<CartItemDto>> GetUserCartItemsAsync(string userId);
-    public Task<ActionResult> ClearCartAsync(string userId);
+    public Task<ActionResult> CheckQuantitiesAsync(string userId);
+    public Task<ActionResult> ClearUserCartAsync(string userId);
 }

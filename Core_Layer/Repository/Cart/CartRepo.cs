@@ -1,4 +1,6 @@
-﻿using Core_Layer.Dtos.CartDto;
+﻿using AutoMapper;
+using Core_Layer.Dtos.CartDto;
+using Core_Layer.Dtos.Product;
 using Core_Layer.Repository.Image;
 using Data_Layer.Context;
 using Data_Layer.Entities;
@@ -6,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Core_Layer.Repository.Cart;
 
-public class CartRepo(Context context,IImageRepo imageRepo) :ICartRepo
+public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICartRepo
 {
     public async Task<ActionResult> AddItemAsync(AddCartItemDto itemDto)
     {
@@ -140,27 +142,58 @@ public class CartRepo(Context context,IImageRepo imageRepo) :ICartRepo
                 ProductId = ci.ProductId,
                 Quantity = ci.Quantity,
                 ImageName =  ci.Product.Images.FirstOrDefault().Name ,
-                UserId = userId
+                UserId = userId,
+                Product = mapper.Map<ProductDto>(ci.Product)
             }).ToListAsync();
-
         return cartItems;
 
     }
 
-    public async Task<ActionResult> ClearCartAsync(string userId)
+    public async Task<ActionResult> CheckQuantitiesAsync(string userId)
     {
         try
         {
-            var result = await context.Carts.Include(e => e.CartItems)
-                .FirstOrDefaultAsync(e => e.UserId == userId);
-            if (result != null && result.CartItems != null)
+            var cart = await context.Carts.Where(e => e.UserId == userId)
+                .Include(e => e.CartItems)
+                .ThenInclude(e => e.Product)
+                .FirstOrDefaultAsync();
+            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
             {
-                context.RemoveRange(result.CartItems);
-                await context.SaveChangesAsync();
                 return ActionResult.Completed();
             }
 
-            return ActionResult.Failed("کارتی وجود نداشت");
+            foreach (var cartItem in cart.CartItems)
+            {
+                cartItem.Quantity = cartItem.Quantity > cartItem.Product.StockQuantity
+                    ? cartItem.Quantity
+                    : cartItem.Product.StockQuantity;
+            }
+
+            await context.SaveChangesAsync();
+            return ActionResult.Completed();
+        }
+        catch (Exception e)
+        {
+            return ActionResult.Failed(e.Message);
+        }
+    }
+
+    public async Task<ActionResult> ClearUserCartAsync(string userId)
+    {
+        try
+        {
+            var result = await context.Carts
+                .Include(e => e.CartItems)
+                .Where(e=>e.UserId == userId)
+                .FirstOrDefaultAsync(e => e.UserId == userId);
+            if (result == null || result.CartItems == null || !result.CartItems.Any() )
+            {
+                return ActionResult.Failed("کارتی وجود نداشت");
+            }
+            context.RemoveRange(result.CartItems);
+            await context.SaveChangesAsync();
+            return ActionResult.Completed();
+           
         }
         catch (Exception e)
         {

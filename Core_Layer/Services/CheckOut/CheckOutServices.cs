@@ -22,26 +22,22 @@ public class CheckoutService(
 {
 
     public async Task<Guid> CheckOutAsync(string userId, int addressId)
-    { 
-            var cart = await context.Carts
-                .AsNoTracking()
-                .Include(e => e.CartItems)
-                .ThenInclude(e => e.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
+    {
+        var cartItems = await cartRepo.GetUserCartItemsAsync(userId);
+            if ( cartItems == null || !cartItems.Any())
                 throw new FileNotFoundException("کارتی پیدا نشد");
             var address = await context.Addresses
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == addressId && x.UserId == userId);
             if (address == null)
                 throw new SqlNullValueException("ادرس پیدا نشد");
-            foreach (var item in cart.CartItems)
+            foreach (var item in cartItems)
             {
-                if (item.Quantity> item.Product.StockQuantity)
+                if (item.Quantity> item.Product.StockQuantity)    
                 {
                     throw new InvalidOperationException(
                         $"مقدار موجودی کمتر از درخواستیه شماست. موجودی:{item.Product.StockQuantity}");
-                }
+                }   
             }
             var snapshot = new SnapShot() 
             { 
@@ -51,7 +47,7 @@ public class CheckoutService(
                 State = SnapShotState.Pending,
                 ShippingCost = 1000000,
                 CreatedAt = DateTime.UtcNow,
-                Items = mapper.Map<List<SnapShotItem>>(cart.CartItems),
+                Items = mapper.Map<List<SnapShotItem>>(cartItems),
                 
             };
 
