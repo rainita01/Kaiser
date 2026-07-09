@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repository\Payment\" />
     <Folder Include="Services\Api\" />
     <Folder Include="Services\ImageServices\" />
     <Folder Include="Services\TextServices\" />

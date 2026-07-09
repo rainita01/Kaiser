@@ -133,6 +133,35 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             .ToListAsync();
     }
 
+    public async Task<List<ProductCardDto>> GetBestSalesProducts(int? pageSize,int? pageNumber)
+    {
+
+        // تنظیم مقادیر پیش‌فرض
+        int actualPageSize = pageSize ?? 10;
+        int actualPageNumber = pageNumber ?? 1;
+
+        // اعتبارسنجی
+        actualPageSize = Math.Max(1, actualPageSize);
+        actualPageNumber = Math.Max(1, actualPageNumber);
+
+        // جلوگیری از دریافت بیش از حد
+        if (actualPageSize > 100) actualPageSize = 100;
+
+        var query = context.Products
+            .AsNoTracking()
+            .Where(e => e.IsBestSell);
+
+        //var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(e => e.CreateTime)
+            .Skip((actualPageNumber - 1) * actualPageSize)
+            .Take(actualPageSize)
+            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        return items;
+    }
     public async Task<ProductDto> GetProductAsync(int id)
     {
         var product = await context.Products

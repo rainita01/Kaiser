@@ -31,6 +31,15 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
         return Ok(products);
     }
 
+    [HttpGet("Products/BestSales")]
+    public async Task<IActionResult> GetBestSales(
+        [FromQuery] int? pageSize,
+        [FromQuery] int page = 1
+    )
+    {
+        var products = await productRepo.GetBestSalesProducts(pageSize, page);
+        return Ok(products);
+    }
     [HttpGet("Products/Detail/{id}/{slug}")]
    
     public async Task<IActionResult> ProductDetail(int id, string slug)
