@@ -153,23 +153,24 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
     {
         try
         {
-            var cart = await context.Carts.Where(e => e.UserId == userId)
-                .Include(e => e.CartItems)
-                .ThenInclude(e => e.Product)
-                .FirstOrDefaultAsync();
-            if (cart == null || cart.CartItems == null || !cart.CartItems.Any())
-            {
+
+            var itemsToUpdate = await context.CartItems
+                .Where(ci => ci.Cart.UserId == userId &&
+                             ci.Quantity > ci.Product.StockQuantity)
+                .Select(ci => new { ci.Id, NewQuantity = ci.Product.StockQuantity })
+                .ToListAsync();
+
+            if (!itemsToUpdate.Any())
                 return ActionResult.Completed();
-            }
 
-            foreach (var cartItem in cart.CartItems)
+            // سپس به‌روزرسانی دسته‌جمعی با استفاده از Idها
+            foreach (var item in itemsToUpdate)
             {
-                cartItem.Quantity = cartItem.Quantity > cartItem.Product.StockQuantity
-                    ? cartItem.Quantity
-                    : cartItem.Product.StockQuantity;
+                await context.CartItems
+                    .Where(ci => ci.Id == item.Id)
+                    .ExecuteUpdateAsync(setters =>
+                        setters.SetProperty(ci => ci.Quantity, item.NewQuantity));
             }
-
-            await context.SaveChangesAsync();
             return ActionResult.Completed();
         }
         catch (Exception e)

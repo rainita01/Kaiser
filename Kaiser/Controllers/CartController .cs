@@ -17,6 +17,8 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
         {
             return BadRequest("لطفا اول وارد شوید ");
         }
+
+        var checkout = await cartRepo.CheckQuantitiesAsync(userId);
         var result = await cartRepo.GetUserCartItemsAsync(userId);
         return Ok(result);
 
