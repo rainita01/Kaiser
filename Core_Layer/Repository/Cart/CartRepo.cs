@@ -153,24 +153,29 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
     {
         try
         {
-
-            var itemsToUpdate = await context.CartItems
+            // حذف آیتم‌های بدون موجودی با یک کوئری
+            var deleteCount = await context.CartItems
                 .Where(ci => ci.Cart.UserId == userId &&
-                             ci.Quantity > ci.Product.StockQuantity)
-                .Select(ci => new { ci.Id, NewQuantity = ci.Product.StockQuantity })
+                             ci.Product.StockQuantity < 1)
+                .ExecuteDeleteAsync();
+
+            // به‌روزرسانی آیتم‌های با موجودی بیشتر از حد
+            var itemsToUpdate = await context.CartItems
+                .Include(ci => ci.Product)
+                .Where(ci => ci.Cart.UserId == userId &&
+                             ci.Quantity > ci.Product.StockQuantity &&
+                             ci.Product.StockQuantity >= 1)
                 .ToListAsync();
 
-            if (!itemsToUpdate.Any())
-                return ActionResult.Completed();
-
-            // سپس به‌روزرسانی دسته‌جمعی با استفاده از Idها
-            foreach (var item in itemsToUpdate)
+            if (itemsToUpdate.Any())
             {
-                await context.CartItems
-                    .Where(ci => ci.Id == item.Id)
-                    .ExecuteUpdateAsync(setters =>
-                        setters.SetProperty(ci => ci.Quantity, item.NewQuantity));
+                foreach (var item in itemsToUpdate)
+                {
+                    item.Quantity = item.Product.StockQuantity;
+                }
+                await context.SaveChangesAsync();
             }
+
             return ActionResult.Completed();
         }
         catch (Exception e)
