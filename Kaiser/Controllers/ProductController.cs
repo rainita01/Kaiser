@@ -23,10 +23,11 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
         [FromQuery] decimal? maxPrice,
         [FromQuery] SortProduct? sort,
         [FromQuery] int? categoryId,
+        [FromQuery] bool? isBestSale,
         [FromQuery] int page = 1)
     {
         List<ProductCardDto> products =
-            await productRepo.GetProductPagesAsync(page, pageSize, minPrice, maxPrice, sort, search, categoryId);
+            await productRepo.GetProductPagesAsync(page, pageSize, minPrice, maxPrice, sort, search, categoryId,isBestSale);
 
         return Ok(products);
     }

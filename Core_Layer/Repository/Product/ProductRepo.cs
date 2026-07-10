@@ -102,7 +102,11 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         decimal? maxPrice,
         SortProduct? sort,
         string? search,
-        int? categoryId)
+        int? categoryId,
+        bool? isBestSale
+
+    
+            )
     {
         var actualPageSize = pageSize ?? 10;
         var skip = (page - 1) * actualPageSize;
@@ -113,15 +117,17 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             .Where(e => (categoryId == null || e.CategoryId == categoryId) &&
                         (minPrice == null || e.Price >= minPrice) &&
                         (maxPrice == null || e.Price <= maxPrice) &&
+                        (isBestSale == null|| e.IsBestSell == isBestSale) &&
                         (string.IsNullOrEmpty(search) || e.Name.Contains(search)));
 
-        // اعمال مرتب‌سازی در دیتابیس
+            
         query = sort switch
         {
             SortProduct.MostViewed => query.OrderByDescending(e => e.ProductViews!.Count),
             SortProduct.PriceAsc => query.OrderBy(e => e.Price),
             SortProduct.PriceDesc => query.OrderByDescending(e => e.Price),
             SortProduct.Newest => query.OrderByDescending(e=>e.CreateTime),
+
             _ => query.OrderBy(e => e.Id)
         };
 

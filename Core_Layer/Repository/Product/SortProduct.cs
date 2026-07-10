@@ -5,5 +5,6 @@ public enum SortProduct
     MostViewed,
     PriceDesc,
     PriceAsc,
-    Newest
+    Newest,
+
 }

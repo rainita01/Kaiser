@@ -8,7 +8,7 @@ public interface IProductRepo
     public Task<ActionResult> AddAsync(AddProductDto dto);
     public Task<ActionResult> UpdateAsync(UpdateProductDto dto);
     public Task<ActionResult> DeleteAsync(int id);
-    public Task<List<ProductCardDto>> GetProductPagesAsync(int page, int? pageSize, decimal? minPrice, decimal? maxPrice,SortProduct? sort, string? search, int? categoryId);
+    public Task<List<ProductCardDto>> GetProductPagesAsync(int page, int? pageSize, decimal? minPrice, decimal? maxPrice,SortProduct? sort, string? search, int? categoryId,bool? isbestSale);
     public Task<List<ProductCardDto>> GetBestSalesProducts(int? pageSize, int? pageNumber);
     public Task<UpdateProductDto> GetUpdateProductAsync(int id);
     public Task<ProductDto> GetProductAsync(int id);
