@@ -13,7 +13,7 @@ public class OrderProfile : Profile
             .ForMember(dest => dest.SnapShotId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.SnapShot, opt => opt.Ignore())
             .ForMember(dest => dest.PaymentId, opt => opt.Ignore())
-            .ForMember(dest => dest.Payment, opt => opt.Ignore())
+            .ForMember(dest => dest.Payments, opt => opt.Ignore())
             .ForMember(dest => dest.State, opt => opt.MapFrom(src => OrderState.Paid))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));

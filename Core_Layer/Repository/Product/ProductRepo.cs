@@ -104,8 +104,6 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         string? search,
         int? categoryId,
         bool? isBestSale
-
-    
             )
     {
         var actualPageSize = pageSize ?? 10;
@@ -132,11 +130,12 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         };
 
         // اعمال صفحه‌بندی و ProjectTo
-        return await query
+        var items = await query
             .Skip(skip)
             .Take(actualPageSize)
             .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
             .ToListAsync();
+        return items;
     }
 
     public async Task<List<ProductCardDto>> GetBestSalesProducts(int? pageSize,int? pageNumber)

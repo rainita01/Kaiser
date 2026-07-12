@@ -11,15 +11,13 @@ public class OrderConfiguration :IEntityTypeConfiguration<Order>
         builder.HasMany(e => e.Items)
             .WithOne(e => e.Order)
             .HasForeignKey(e => e.OrderId);
-        builder.HasOne(e => e.Address)
-            .WithMany(e => e.Orders)
-            .HasForeignKey(e => e.AddressId)
-            .OnDelete(DeleteBehavior.NoAction);
         builder.HasOne(e => e.SnapShot)
             .WithOne()
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(e => e.Payment).WithOne();
+        builder.HasMany(e => e.Payments)
+            .WithOne(e => e.Order)
+            .HasForeignKey(e => e.OrderId);
     }
 }
 public class OrderItemConfiguration :IEntityTypeConfiguration<OrderItem>

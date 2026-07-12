@@ -1,5 +1,4 @@
 ﻿using Core_Layer.Dtos.PaymentDto;
-using System;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -32,7 +31,6 @@ public class ZarinPalServices(HttpClient httpClient) :IZarinPalServices
     {
         var response = await httpClient.PostAsJsonAsync("pg/v4/payment/verify.json", dto);
         var body = await response.Content.ReadAsStringAsync();
-      
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"ZarinPal verify failed: {body}");

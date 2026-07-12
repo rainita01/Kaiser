@@ -5,13 +5,17 @@ public class SnapShot
     public Guid Id { get; set; }
     public long ShippingCost { get; set; }
     public long TotalPrice { get; set; }
-    public SnapShotState State { get; set; } // Pending, Converted, Expired
+    public SnapShotState State { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<SnapShotItem> Items { get; set; }
     public string UserId { get; set; }
     public User User { get; set; }  
-    public int AddressId { get; set; }
-    public Address Address { get; set; }
+ 
+    public string City { get; set; }
+    public string Province { get; set; }
+    public string FullAddress { get; set; }
+    public string PostCode { get; set; }
+    public string PhoneNumber { get; set; } 
     public Payment? Payment { get; set; }
 
 }

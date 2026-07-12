@@ -21,6 +21,8 @@ public class Context(DbContextOptions options)
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<ProductView> ProductViews { get; set; }    
     public DbSet<Address> Addresses { get; set; }
+    public DbSet<Province> Provinces { get; set; }
+    public DbSet<City> Cities { get; set; } 
     public DbSet<ContactMessage> ContactMessages { get; set; }
     public DbSet<SnapShot> SnapShots { get; set; }
     public DbSet<SnapShotItem> SnapShotItems { get; set; }  

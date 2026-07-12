@@ -12,12 +12,11 @@ public class Order
     public DateTime CreatedAt { get; set; }
     #region Relations
 
-    public int AddressId { get; set; }
-    public Address Address { get; set; } = new Address();
+
     public Guid SnapShotId { get; set; }
     public SnapShot SnapShot { get; set; }  
     public Guid PaymentId { get; set; }
-    public Payment Payment { get; set; }
+    public List<Payment> Payments { get; set; }
     public string UserId { get; set; }
     public User User { get; set; }  
 

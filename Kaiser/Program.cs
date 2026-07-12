@@ -17,15 +17,10 @@ using Core_Layer.Services.Seed;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Data_Layer.Entities;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using Parbad.Builder;
-using Parbad.Gateway.ZarinPal;
-using Parbad.Storage.EntityFrameworkCore;
-using Parbad.Storage.EntityFrameworkCore.Builder;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

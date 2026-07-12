@@ -42,7 +42,9 @@ public class CheckoutService(
             var snapshot = new SnapShot() 
             { 
                 Id = Guid.NewGuid(),
-                AddressId = addressId,
+                PostCode = address.PostCode,
+                City = address.City.Name,
+                Province = address.Province.Name,
                 UserId = userId,
                 State = SnapShotState.Pending,
                 ShippingCost = 1000000,

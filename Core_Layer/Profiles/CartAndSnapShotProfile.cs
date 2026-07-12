@@ -34,7 +34,6 @@ public class CartAndSnapShotProfile : Profile
             .ForMember(e => e.SnapShotId, s => s.Ignore());
 
         CreateMap<SnapShotDto, SnapShot>()
-            .ForMember(e => e.Address, s => s.Ignore())
             .ForMember(e => e.User, s => s.Ignore());
         CreateMap<SnapShotItemDto, SnapShotItem>()
             .ForMember(e => e.SnapShot, s => s.Ignore());

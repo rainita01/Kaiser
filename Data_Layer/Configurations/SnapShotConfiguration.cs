@@ -11,11 +11,7 @@ public class SnapShotConfiguration :IEntityTypeConfiguration<SnapShot>
         builder.HasMany(e => e.Items)
             .WithOne(e => e.SnapShot)
             .HasForeignKey(e => e.SnapShotId)
-            .OnDelete(DeleteBehavior.Cascade)
-            ;
-        builder.HasOne(e => e.Address)
-            .WithMany()
-            .HasForeignKey(e => e.AddressId);
+            .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(s => s.Payment)
             .WithOne(p => p.SnapShot)
             .HasForeignKey<Payment>(p => p.SnapShotId)
