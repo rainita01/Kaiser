@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Middlewares\" />
+    <Folder Include="Repository\Payment\" />
     <Folder Include="Services\Api\" />
     <Folder Include="Services\ImageServices\" />
     <Folder Include="Services\TextServices\" />
@@ -19,8 +21,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.1.1" />
-    <PackageReference Include="Parbad" Version="3.11.3" />
-    <PackageReference Include="RestSharp" Version="114.0.0" />
+    <PackageReference Include="Azure.Core" Version="1.47.1" />
+ 
   </ItemGroup>
 
 </Project>

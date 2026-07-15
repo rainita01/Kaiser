@@ -21,98 +21,54 @@ public class CheckoutService(
     IZarinPalServices zarinPal) : ICheckOutServices
 {
 
-    public async Task<Guid> CheckOutAsync(string userId, int addressId)
+    public async Task<string> CheckOutAsync(string userId, int addressId)
     {
+     
         var cartItems = await cartRepo.GetUserCartItemsAsync(userId);
             if ( cartItems == null || !cartItems.Any())
                 throw new FileNotFoundException("کارتی پیدا نشد");
-            var address = await context.Addresses
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == addressId && x.UserId == userId);
-            if (address == null)
-                throw new SqlNullValueException("ادرس پیدا نشد");
-            foreach (var item in cartItems)
-            {
-                if (item.Quantity> item.Product.StockQuantity)    
-                {
-                    throw new InvalidOperationException(
-                        $"مقدار موجودی کمتر از درخواستیه شماست. موجودی:{item.Product.StockQuantity}");
-                }   
-            }
+            var address = await addressRepo.FindAddressAsync(userId, addressId);
+
+            await cartRepo.CheckQuantitiesAsync(userId);
             var snapshot = new SnapShot() 
             { 
                 Id = Guid.NewGuid(),
                 PostCode = address.PostCode,
-                City = address.City.Name,
-                Province = address.Province.Name,
+                City = address.City,
+                Province = address.Province,
                 UserId = userId,
                 State = SnapShotState.Pending,
                 ShippingCost = 1000000,
                 CreatedAt = DateTime.UtcNow,
                 Items = mapper.Map<List<SnapShotItem>>(cartItems),
-                
+                FullAddress = address.FullAddress,
+                PhoneNumber = address.PhoneNumber,
             };
-
             snapshot.TotalPrice = (long)snapshot.Items.Sum(e =>e.UnitPrice * (1 - e.Discount / 100m) * e.Count) + snapshot.ShippingCost;
-        
             await context.SnapShots.AddAsync(snapshot);
             await context.SaveChangesAsync();
-            
-            return snapshot.Id;
-    }
-
-    public async Task<string> StartPaymentAsync(string userId,Guid snapshotId)
-    {
-
-        var snapshot = await context.SnapShots
-            .FirstOrDefaultAsync(s => s.Id == snapshotId && s.UserId == userId);
-
-        if (snapshot == null)
-            throw new Exception("سفارش یافت نشد");
-
-        if (snapshot.State == SnapShotState.Converted)
-            throw new InvalidOperationException("این سفارش قبلاً پرداخت شده است");
-        if (snapshot.State == SnapShotState.Expired)
-            throw new InvalidOperationException("مهلت این سفارش تمام شده، لطفاً دوباره از سبد خرید اقدام کنید");
-
-        if (DateTime.UtcNow - snapshot.CreatedAt > TimeSpan.FromMinutes(30))
-        {
-            snapshot.State = SnapShotState.Expired;
-            await context.SaveChangesAsync();
-            throw new InvalidOperationException("مهلت این سفارش تمام شده، لطفاً دوباره از سبد خرید اقدام کنید");
-        }
-        var pendingPayment = await context.Payments
-            .Where(p => p.SnapShotId == snapshot.Id && p.State == PaymentState.Requested)
-            .OrderByDescending(p => p.CreatedAt)
-            .FirstOrDefaultAsync();
-
-        if (pendingPayment?.Authority != null)
-            return pendingPayment.Authority;
-
         var payment = new Payment
         {
             Id = Guid.NewGuid(),
             SnapShotId = snapshot.Id,
-            Amount = snapshot.TotalPrice ,
+            Amount = snapshot.TotalPrice,
             State = PaymentState.Requested,
             CreatedAt = DateTime.UtcNow
         };
-
         var request = await zarinPal.RequestAsync(new ZarinPalRequestDto()
-            {
-                MerchantId = "9026f668-323b-416c-94a6-54fdc65b4d34",
-                Amount = snapshot.TotalPrice,
-                Description = $"پرداخت سفارش {snapshot.Id}",
-                CallbackUrl = $"https://localhost:7259/Payment/Callback?paymentId={payment.Id}",
-            });
-
-            if (request?.data == null || request.data.code != 100)
-                throw new RequestFailedException(request.errors.ToString());
-
+        {
+            MerchantId = "9026f668-323b-416c-94a6-54fdc65b4d34",
+            Amount = snapshot.TotalPrice,
+            Description = $"پرداخت سفارش {snapshot.Id}",
+            CallbackUrl = $"https://localhost:7259/Payment/Callback?paymentId={payment.Id}",
+        });
+        if (request?.data == null || request.data.code != 100)
+        {
+            throw new RequestFailedException(request.errors.ToString());
+        }
         payment.Authority = request.data.authority;
         await context.Payments.AddAsync(payment);
         await context.SaveChangesAsync();
-
         return payment.Authority;
     }
 

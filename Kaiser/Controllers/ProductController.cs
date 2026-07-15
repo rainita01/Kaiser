@@ -28,7 +28,6 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     {
         List<ProductCardDto> products =
             await productRepo.GetProductPagesAsync(page, pageSize, minPrice, maxPrice, sort, search, categoryId,isBestSale);
-
         return Ok(products);
     }
 

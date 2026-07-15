@@ -16,9 +16,8 @@ public class PaymentController(ICheckOutServices checkOutServices) : ControllerB
             if (userId == null)
                 return Unauthorized();
 
-            var snapshot = await checkOutServices.CheckOutAsync(userId, addressId);
+            var authority = await checkOutServices.CheckOutAsync(userId, addressId);
 
-            var authority = await checkOutServices.StartPaymentAsync(userId,snapshot);
             return Ok(new
             {
               url=  $"https://sandbox.zarinpal.com/pg/StartPay/{authority}"

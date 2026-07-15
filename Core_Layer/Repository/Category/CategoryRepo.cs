@@ -4,9 +4,11 @@ using Core_Layer.Dtos.Category;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
 namespace Core_Layer.Repository.Category;
 
-public class CategoryRepo(Context context,IMapper mapper,TextServices textServices) :ICategoryRepo
+public class CategoryRepo(ILogger<CategoryRepo> logger,Context context,IMapper mapper,TextServices textServices) :ICategoryRepo
 {
     public async Task<ActionResult> AddAsync(AddCategoryDto dto)
     {
@@ -23,6 +25,7 @@ public class CategoryRepo(Context context,IMapper mapper,TextServices textServic
         }
         catch (Exception e)
         {
+            logger.LogError(e,"Error while adding category: {@dto}",dto);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -40,6 +43,7 @@ public class CategoryRepo(Context context,IMapper mapper,TextServices textServic
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while deleting category: {id}", id);
             return ActionResult.Failed(e.Message);
         }
         
@@ -62,6 +66,7 @@ public class CategoryRepo(Context context,IMapper mapper,TextServices textServic
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while updating category: {@dto}", dto);
             return ActionResult.Failed(e.Message);
         }
     }

@@ -1,5 +1,7 @@
-﻿using Data_Layer.Entities;
+﻿using Data_Layer.Context;
+using Data_Layer.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core_Layer.Services.Seed;
@@ -10,8 +12,6 @@ public class IdentitySeeder
     {
         var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-
-
         if (!await roleManager.RoleExistsAsync("admin"))
         {
             await roleManager.CreateAsync(new Role(){Name = "admin"});

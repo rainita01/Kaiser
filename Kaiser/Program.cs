@@ -1,4 +1,5 @@
-﻿using Core_Layer.Profiles;
+﻿using Core_Layer.Middlewares;
+using Core_Layer.Profiles;
 using Core_Layer.Repository.Address;
 using Core_Layer.Repository.Cart;
 using Core_Layer.Repository.Category;
@@ -10,6 +11,7 @@ using Core_Layer.Repository.Product;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.Api;
+using Core_Layer.Services.BackGroundServices;
 using Core_Layer.Services.CheckOut;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
@@ -20,12 +22,35 @@ using Data_Layer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 
 
 var builder = WebApplication.CreateBuilder(args);
+Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine("SERILOG ERROR: " + msg));
+var columnOptions = new ColumnOptions();
+columnOptions.Store.Remove(StandardColumn.Properties); // skip XML blob column, we'll use structured columns instead
+columnOptions.Store.Add(StandardColumn.LogEvent);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(
+        connectionString: builder.Configuration.GetConnectionString("KaiserShop"),
+        sinkOptions: new MSSqlServerSinkOptions
+        {
+            TableName = "Logs",
+            AutoCreateSqlTable = true, // creates the table on first run if it doesn't exist
+            SchemaName = "dbo"
+        },
+        columnOptions: columnOptions,
+        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information // extra safety: only Warning+ hits SQL
+    )
+    .CreateLogger();
 
+builder.Host.UseSerilog();
 // Add services to the container.
-
+builder.Services.AddHostedService<LogCleanupService>();
 builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -124,6 +149,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseSerilogRequestLogging();
 using (var scope = app.Services.CreateScope())
 {
     await IdentitySeeder.SeedAsync(scope.ServiceProvider);

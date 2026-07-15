@@ -3,10 +3,11 @@ using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.Comment;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Core_Layer.Repository.Comment;
 
-public class CommentRepo(Context context,IMapper mapper) : ICommentRepo
+public class CommentRepo(ILogger<CommentRepo> logger,Context context,IMapper mapper) : ICommentRepo
 {
     public async Task<ActionResult> AddAsync(AddCommentDto model, string userId)
     {
@@ -23,6 +24,7 @@ public class CommentRepo(Context context,IMapper mapper) : ICommentRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e,"user{userId} tried to add comment but got error:{@model} " ,userId,model);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -41,6 +43,7 @@ public class CommentRepo(Context context,IMapper mapper) : ICommentRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e,"Error while deleting comment: {id}",id);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -81,6 +84,7 @@ public class CommentRepo(Context context,IMapper mapper) : ICommentRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e,"error while approve or disApprove {@dto} ",dto);
             return ActionResult.Failed(e.Message);
         }
 

@@ -8,6 +8,7 @@ public interface IAddressRepo
     public Task<ActionResult> UpdateAsync(UpdateAddressDto dto);
     public Task<ActionResult> DeleteAsync(int id);
     public Task<ActionResult> AddAddressToOrderAsync(AddAddressToOrderDto id);
+    public Task<AddressDto> FindAddressAsync(string userId, int addressId);
     public Task<List<AddressDto>?> GetUserAddresses(string userId);
     public Task<ActionResult> AddProvinceAsync(string name);
     public Task<ActionResult> AddCityAsync(string name,int provinceId);

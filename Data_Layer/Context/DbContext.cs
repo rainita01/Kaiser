@@ -30,6 +30,12 @@ public class Context(DbContextOptions options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+   
         base.OnModelCreating(builder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
     }
 }

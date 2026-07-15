@@ -39,10 +39,8 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
         {
             return Ok();
         }
-        else
-        {
-            return BadRequest();
-        }
+        return BadRequest();
+        
     }
     [HttpPut("CategoryManager/Update")]
     

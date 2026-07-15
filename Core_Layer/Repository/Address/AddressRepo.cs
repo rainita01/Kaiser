@@ -1,14 +1,16 @@
-﻿using AutoMapper;
+﻿using System.Data.SqlTypes;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.AddressDto;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 
 namespace Core_Layer.Repository.Address;
 
-public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
+public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context context) : IAddressRepo
 {
     public async Task<ActionResult> AddAsync(AddAddressDto dto,string userId)
     {
@@ -16,13 +18,15 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         try
         {
             var address = mapper.Map<Data_Layer.Entities.Address>(dto);
-            address.UserId = userId;
+            address.UserId = userId; 
             await context.Addresses.AddAsync(address);
             await context.SaveChangesAsync();
+            logger.LogInformation("user {userId} address added successfully",userId);
             return ActionResult.Completed();
         }
         catch (Exception e)
         {
+            logger.LogError(e, "user {UserId} tried to add address {@AddressDto} but failed", userId, dto);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -51,6 +55,7 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e,"Error while updating address {@dto}",dto);
             return ActionResult.Failed(e.Message);
         }
 
@@ -71,6 +76,7 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while deleting address: {id}", id);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -96,6 +102,7 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
             if (await context.Provinces.AnyAsync(e=>e.Name == name))
             {
                 return ActionResult.Failed("استان با همچین نامی وجود دارد");
+
             }
 
             var provice = new Province() { Name = name };
@@ -106,6 +113,7 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while adding province : {name}", name);
             return ActionResult.Failed(e.Message);
         }
 
@@ -129,6 +137,7 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while adding city name:{name}, provinceId:{provinceId}", name,provinceId);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -146,6 +155,7 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while deleting city id: {id}", id);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -163,10 +173,22 @@ public class AddressRepo(IMapper mapper,Context context) : IAddressRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while deleting province id: {id}", id);
             return ActionResult.Failed(e.Message);
         }
     }
 
+    public async Task<AddressDto> FindAddressAsync(string userId, int addressId)
+    {
+        var address = await context.Addresses
+            .Include(address => address.City)
+            .Include(address => address.Province)
+            .ProjectTo<AddressDto>(mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(x => x.Id == addressId && x.UserId == userId);
+        if (address == null)
+            throw new SqlNullValueException("ادرس پیدا نشد");
+        return address;
+    }
     public async Task<List<ProviceDto>> GetProvinceAsync()
     {
         return await context.Provinces.AsNoTracking()

@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using Core_Layer.Dtos.CartDto;
 using Core_Layer.Dtos.Product;
-using Core_Layer.Repository.Image;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Core_Layer.Repository.Cart;
 
-public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICartRepo
+public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :ICartRepo
 {
     public async Task<ActionResult> AddItemAsync(AddCartItemDto itemDto)
     {
@@ -30,7 +30,10 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
                 .ThenInclude(s=>s.CartItems)
                 .FirstOrDefaultAsync(e => e.Id == itemDto.UserId);
             if (user == null)
+            {
+                logger.LogWarning("a user tried to add cart but userId not found");
                 return ActionResult.Failed("کاربری پیدا نشد");
+            }
 
 
 
@@ -39,6 +42,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
                 cart = user.Carts.First();
                 if (cart.CartItems != null&&cart.CartItems.Any(e=>e.ProductId == itemDto.ProductId))
                 {
+                    logger.LogInformation("user:{user} added this item:{item} before",itemDto.UserId,itemDto.ProductId);
                     return ActionResult.Failed("کاربر قبلا این ایتم را اضافه کرده است ");
                 }
             }
@@ -60,6 +64,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         }
         catch (Exception e)
         {
+            logger.LogError(e, "Error while Add item to cart {@itemDto}",itemDto);
            await transAction.RollbackAsync();
           return  ActionResult.Failed(e.Message);
         }
@@ -78,6 +83,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         }
         catch (Exception e)
         {
+            logger.LogError(e,"Error while deleting Cart Item {cartItemId}",cardItemId);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -103,6 +109,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         }
         catch (Exception e)
         {
+            logger.LogError(e, "error while increase quantity of cart {cardItemId}", cardItemId);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -124,6 +131,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         }
         catch (Exception e)
         {
+            logger.LogError(e, "error while Decrease quantity of cart {carditemId}", cardItemId);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -154,7 +162,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         try
         {
             // حذف آیتم‌های بدون موجودی با یک کوئری
-            var deleteCount = await context.CartItems
+                 await context.CartItems
                 .Where(ci => ci.Cart.UserId == userId &&
                              ci.Product.StockQuantity < 1)
                 .ExecuteDeleteAsync();
@@ -180,6 +188,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         }
         catch (Exception e)
         {
+            logger.LogError(e,"Error whi,e check if product quantity with cart quantity for user {userId}",userId);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -203,6 +212,7 @@ public class CartRepo(Context context,IImageRepo imageRepo,IMapper mapper) :ICar
         }
         catch (Exception e)
         {
+            logger.LogError(e,"Error while clear carts for user{userId}",userId);
             return ActionResult.Failed(e.Message);
         }
     }

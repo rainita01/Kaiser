@@ -4,10 +4,11 @@ using Core_Layer.Dtos.ContactUsDto;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Core_Layer.Repository.ContactUs;
 
-public class ContactUsRepo(Context context,IMapper mapper) : IContactUsRepo
+public class ContactUsRepo(ILogger<ContactUsRepo> logger,Context context,IMapper mapper) : IContactUsRepo
 {
     public async Task<ActionResult> Add(ContactUsDto contactUsDto)
     {
@@ -19,6 +20,7 @@ public class ContactUsRepo(Context context,IMapper mapper) : IContactUsRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e,"error while adding contactUs: {@dto}",contactUsDto);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -36,6 +38,7 @@ public class ContactUsRepo(Context context,IMapper mapper) : IContactUsRepo
         }
         catch (Exception e)
         {
+            logger.LogError(e, "error while deleting contactUs: {id}",id);
             return ActionResult.Failed(e.Message);
         }
     }

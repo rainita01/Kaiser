@@ -9,5 +9,7 @@ public class AddressDto
     public string PhoneNumber { get; set; }
     public string Province { get; set; }
     public string City { get; set; }
+    public string  UserId { get; set; } 
+
     public string FullAddress { get; set; }
 }

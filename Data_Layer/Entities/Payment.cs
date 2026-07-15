@@ -13,8 +13,8 @@ public class Payment
     public PaymentState State { get; set; } // Requested, Succeeded, Failed
     public DateTime CreatedAt { get; set; }
     public DateTime? VerifiedAt { get; set; }
-    public int OrderId { get; set; }   
-    public Order Order { get; set; }
+    public int? OrderId { get; set; }   
+    public Order? Order { get; set; }
 
 }
 
