@@ -59,8 +59,6 @@ public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context cont
             return ActionResult.Failed(e.Message);
         }
 
-
-
     }
 
     public async Task<ActionResult> DeleteAsync(int id)
@@ -88,11 +86,19 @@ public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context cont
 
     public async Task<List<AddressDto>?> GetUserAddresses(string userId)
     {
-        return await context.Addresses
-            .AsNoTracking()
-            .Where(e => e.UserId == userId)
-            .ProjectTo<AddressDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        try
+        {
+            return await context.Addresses
+                .AsNoTracking()
+                .Where(e => e.UserId == userId)
+                .ProjectTo<AddressDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while get user addresses user: {userId}",userId);
+            throw;
+        }
     }
 
     public async Task<ActionResult> AddProvinceAsync(string name)
@@ -180,27 +186,51 @@ public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context cont
 
     public async Task<AddressDto> FindAddressAsync(string userId, int addressId)
     {
-        var address = await context.Addresses
-            .Include(address => address.City)
-            .Include(address => address.Province)
-            .ProjectTo<AddressDto>(mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(x => x.Id == addressId && x.UserId == userId);
-        if (address == null)
-            throw new SqlNullValueException("ادرس پیدا نشد");
-        return address;
+        try
+        {
+            var address = await context.Addresses
+                .Include(address => address.City)
+                .Include(address => address.Province)
+                .ProjectTo<AddressDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(x => x.Id == addressId && x.UserId == userId);
+            if (address == null)
+                throw new SqlNullValueException("ادرس پیدا نشد");
+            return address;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while finding address:{address} for user:{user}",addressId,userId);
+            throw;
+        }
     }
     public async Task<List<ProviceDto>> GetProvinceAsync()
     {
-        return await context.Provinces.AsNoTracking()
-            .ProjectTo<ProviceDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        try
+        {
+            return await context.Provinces.AsNoTracking()
+                .ProjectTo<ProviceDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+          logger.LogError(e,"error while getting provinces");
+            throw;
+        }
     }
 
     public async Task<List<CityDto>> GetCitiesAsync()
     {
-        return await context.Cities.AsNoTracking()
-            .ProjectTo<CityDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        try
+        {
+            return await context.Cities.AsNoTracking()
+                .ProjectTo<CityDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "error while getting cities");
+            throw;
+        }
     }
 
     private async Task<Data_Layer.Entities.Address?> GetAddressByIdAsync(int id)

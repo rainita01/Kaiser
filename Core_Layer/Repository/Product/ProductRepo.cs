@@ -7,10 +7,11 @@ using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Core_Layer.Repository.Product;
 
-public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo,TextServices textServices) : IProductRepo
+public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo,TextServices textServices) : IProductRepo
 {
     public async Task<ActionResult> AddAsync(AddProductDto dto)
     {
@@ -38,12 +39,14 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
                 await context.SaveChangesAsync();
                 
             }
-
+            
             await transaction.CommitAsync();
+            logger.LogInformation("new product created: {@dto}",dto);
             return ActionResult.Completed();
         }
         catch (Exception e)
         {
+            logger.LogError(e,"error while adding new product {@dto}",dto);
             await transaction.RollbackAsync();
             return ActionResult.Failed(e.Message);
         }
@@ -56,6 +59,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
             var product = await GetProduct(dto.Id);
             if (product == null)
                 return ActionResult.Failed("محصول پیدا نشد!");
+            
 
 
             product.Name = dto.Name ?? product.Name;
@@ -73,6 +77,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         }
         catch (Exception e)
         {
+            logger.LogError(e,"error while updating product:{id}",dto.Id);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -91,6 +96,7 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         }
         catch (Exception e)
         {
+            logger.LogError(e,"error while removing product:{id}",id);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -130,22 +136,27 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
         };
 
         // اعمال صفحه‌بندی و ProjectTo
-        var items = await query
-            .Skip(skip)
-            .Take(actualPageSize)
-            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
-        return items;
+        try
+        {
+            var items = await query
+                .Skip(skip)
+                .Take(actualPageSize)
+                .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+            return items;
+        }
+        catch (Exception e)    
+        {
+            logger.LogError(e,"error while getting products pages");
+            throw;
+        }
     }
 
     public async Task<List<ProductCardDto>> GetBestSalesProducts(int? pageSize,int? pageNumber)
     {
 
-        // تنظیم مقادیر پیش‌فرض
         int actualPageSize = pageSize ?? 10;
         int actualPageNumber = pageNumber ?? 1;
-
-        // اعتبارسنجی
         actualPageSize = Math.Max(1, actualPageSize);
         actualPageNumber = Math.Max(1, actualPageNumber);
 
@@ -158,36 +169,82 @@ public class ProductRepo(Context context,IMapper mapper, IImageRepo imageRepo,IV
 
         //var totalCount = await query.CountAsync();
 
-        var items = await query
-            .OrderByDescending(e => e.CreateTime)
-            .Skip((actualPageNumber - 1) * actualPageSize)
-            .Take(actualPageSize)
-            .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        try
+        {
+            var items = await query
+                .OrderByDescending(e => e.CreateTime)
+                .Skip((actualPageNumber - 1) * actualPageSize)
+                .Take(actualPageSize)
+                .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
 
-        return items;
+            return items;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting best sales products");
+            throw;
+        }
     }
     public async Task<ProductDto> GetProductAsync(int id)
     {
-        var product = await context.Products
-            .AsNoTracking()
-            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(e => e.Id == id);
+        try
+        {
+            var product = await context.Products
+                .AsNoTracking()
+                .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(e => e.Id == id);
 
-        if (product == null)
-            throw new NullReferenceException();
-        product.Views = await viewsRepo.GetPageViewsCount(id);
-        return product;
+            if (product == null)
+                throw new NullReferenceException();
+            product.Views = await viewsRepo.GetPageViewsCount(id);
+            return product;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while get product:{id}",id);
+            throw;
+        }
 
+    }
+
+    public async Task<ActionResult> ExecuteProductQuantityCostAsync(int productId, int count)
+    {
+        try
+        {
+            var affected = await context.Products
+                .Where(p => p.Id == productId && p.StockQuantity >= count)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.StockQuantity, p => p.StockQuantity - count));
+            if (affected == 0)
+            {
+                logger.LogWarning("tried to executed product:{id} but quantity was lower than needed",productId);
+                return ActionResult.Failed("موجودی کمتر از انتظار بود");
+            }
+                
+            return ActionResult.Completed();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while executing product quantity in method");
+            throw;
+        }
     }
 
     public async Task<UpdateProductDto> GetUpdateProductAsync(int id)
     {
-        var product = await context.Products
-            .Include(e => e.Images)
-            .FirstOrDefaultAsync(e => e.Id == id);
-        var productDto = mapper.Map<UpdateProductDto>(product);
-        return productDto;
+        try
+        {
+            var product = await context.Products
+                .Include(e => e.Images)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            var productDto = mapper.Map<UpdateProductDto>(product);
+            return productDto;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting product:{id} for updating",id);
+            throw;
+        }
     }
     private async Task<Data_Layer.Entities.Product?> GetProduct(int id)
     {

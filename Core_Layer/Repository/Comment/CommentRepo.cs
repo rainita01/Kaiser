@@ -13,10 +13,8 @@ public class CommentRepo(ILogger<CommentRepo> logger,Context context,IMapper map
     {
         try
         {
-       
             var comment = mapper.Map<Data_Layer.Entities.Comment>(model);
             comment.UserId = userId;
-            
             await context.Comments.AddAsync(comment);
             await context.SaveChangesAsync();
 
@@ -24,7 +22,7 @@ public class CommentRepo(ILogger<CommentRepo> logger,Context context,IMapper map
         }
         catch (Exception e)
         {
-            logger.LogError(e,"user{userId} tried to add comment but got error:{@model} " ,userId,model);
+            logger.LogError(e,"user:{userId} tried to add comment but got error:{@model} " ,userId,model);
             return ActionResult.Failed(e.Message);
         }
     }
@@ -50,22 +48,38 @@ public class CommentRepo(ILogger<CommentRepo> logger,Context context,IMapper map
 
     public async Task<List<CommentDto>> GetAllAsync()
     {
-        return await context.Comments.AsNoTracking()
-            .OrderByDescending(e=>e.IsApproved)
-            .ProjectTo<CommentDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        try
+        {
+            return await context.Comments.AsNoTracking()
+                .OrderByDescending(e => e.IsApproved)
+                .ProjectTo<CommentDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting all comments");
+            throw;
+        }
     }
 
     public async Task<List<CommentDto>> ProductCommentsAsync(int productId,int? totalCounts,int pageNumber= 1)
-    {   
-        return await context.Comments
-            .AsNoTracking()
-            .Skip((pageNumber - 1) * 10)
-            .Take(totalCounts ?? 10)
-            .Where(e => e.IsApproved && e.ProductId == productId)
-            .OrderBy(e=>e.SendDate)
-            .ProjectTo<CommentDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+    {
+        try
+        {
+            return await context.Comments
+                .AsNoTracking()
+                .Skip((pageNumber - 1) * 10)
+                .Take(totalCounts ?? 10)
+                .Where(e => e.IsApproved && e.ProductId == productId)
+                .OrderBy(e => e.SendDate)
+                .ProjectTo<CommentDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting comments for product:{productId} with totalCounts:{counts}",productId,totalCounts);
+            throw;
+        }
     }
 
     public async Task<ActionResult> ApproveOrDisApproveCommentAsync(ApproveOrDisApproveCommentDto dto)

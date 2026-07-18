@@ -138,22 +138,30 @@ public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :
 
     public async Task<List<CartItemDto>> GetUserCartItemsAsync(string userId)
     {
-        var cartItems = await context.CartItems
-            .AsNoTracking()
-            .Where(ci => ci.Cart.UserId == userId)  // ارتباط با Cart
-            .Select(ci => new CartItemDto
-            {
-                DiscountPercent = ci.Product.DiscountPercent,
-                Id = ci.Id,
-                Name = ci.Product.Name,
-                Price = ci.Product.Price,
-                ProductId = ci.ProductId,
-                Quantity = ci.Quantity,
-                ImageName =  ci.Product.Images.FirstOrDefault().Name ,
-                UserId = userId,
-                Product = mapper.Map<ProductDto>(ci.Product)
-            }).ToListAsync();
-        return cartItems;
+        try
+        {
+            return await context.CartItems
+                .AsNoTracking()
+                .Where(ci => ci.Cart.UserId == userId) // ارتباط با Cart
+                .Select(ci => new CartItemDto
+                {
+                    DiscountPercent = ci.Product.DiscountPercent,
+                    Id = ci.Id,
+                    Name = ci.Product.Name,
+                    Price = ci.Product.Price,
+                    ProductId = ci.ProductId,
+                    Quantity = ci.Quantity,
+                    ImageName = ci.Product.Images.FirstOrDefault().Name,
+                    UserId = userId,
+                    Product = mapper.Map<ProductDto>(ci.Product)
+                }).ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while get user cartItems for user:{id}",userId);
+            throw;
+        }
+       
 
     }
 

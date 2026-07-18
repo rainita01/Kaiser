@@ -3,10 +3,11 @@ using Core_Layer.Dtos.ViewsDto;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Core_Layer.Repository.Visitors;
 
-public class ViewRepo(Context context) :IViewsRepo
+public class ViewRepo(ILogger<ViewRepo> logger,Context context) :IViewsRepo
 {
     public async Task<ActionResult> AddAsync(AddViewDto dto)
     {
@@ -22,7 +23,7 @@ public class ViewRepo(Context context) :IViewsRepo
             await context.ProductViews.AddAsync(model);
             await context.SaveChangesAsync();
 
-
+            logger.LogInformation("new view saved {@dto}",dto);
             return ActionResult.Completed();
         }
         catch (Exception e)
@@ -33,6 +34,14 @@ public class ViewRepo(Context context) :IViewsRepo
 
     public async Task<long> GetPageViewsCount(int pageId)
     {
-        return await context.ProductViews.CountAsync(e => e.ProductId == pageId);
+        try
+        {
+            return await context.ProductViews.CountAsync(e => e.ProductId == pageId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting page views: {pageId}",pageId);
+            throw;
+        }
     }
 }

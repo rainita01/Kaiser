@@ -7,6 +7,7 @@ using Core_Layer.Repository.Comment;
 using Core_Layer.Repository.ContactUs;
 using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Order;
+using Core_Layer.Repository.Payment;
 using Core_Layer.Repository.Product;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
@@ -80,6 +81,7 @@ builder.Services.AddScoped<IContactUsRepo, ContactUsRepo>();
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IPaymentRepo,PaymentRepo>();
 #endregion
 
 #region Mapper
@@ -94,6 +96,7 @@ builder.Services.AddAutoMapper(mapp =>
     mapp.AddProfile<CommentProfile>();
     mapp.AddProfile<CartAndSnapShotProfile>();
     mapp.AddProfile<OrderProfile>();
+    mapp.AddProfile<PaymentProfile>();
 });
 
 #endregion

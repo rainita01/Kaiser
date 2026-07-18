@@ -1,16 +1,16 @@
-﻿using System.Transactions;
+﻿
 using AutoMapper;
 using Core_Layer.Dtos.ImageDto;
 using Core_Layer.Services.ImageServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
-using Data_Layer.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Transaction = System.Transactions.Transaction;
 
 namespace Core_Layer.Repository.Image;
 
-public class ImageRepo(Context context,ImageServices imageServices,IMapper mapper) : IImageRepo
+public class ImageRepo(ILogger<ImageRepo> logger,Context context,ImageServices imageServices,IMapper mapper) : IImageRepo
 {
     public async Task<ActionResult> RemoveAsync(int id)
     {
@@ -18,7 +18,10 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
         {
             var image = await GetImageAsync(id);
             if (image == null)
+            {
+                
                 return ActionResult.Failed("عکس پیدا نشد...");
+            }
             context.Images.Remove(image);
             var path = Path.Combine(imageServices.ContentRootPath,"Uploads", image.Name);
             if (File.Exists(path))
@@ -62,18 +65,42 @@ public class ImageRepo(Context context,ImageServices imageServices,IMapper mappe
 
     public async Task<ImageDto> GetByIdAsync(int id)
     {
-        var image = await context.Images.FirstOrDefaultAsync(e => e.Id == id);
-        return mapper.Map<ImageDto>(image);
+        try
+        {
+            var image = await context.Images.FirstOrDefaultAsync(e => e.Id == id);
+            return mapper.Map<ImageDto>(image);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting image: {id}",id);
+            throw;
+        }
 
     }
 
     public async Task<string?> GetFirstImageAsync(int productId)
     {
-        var image =  await context.Images.FirstOrDefaultAsync(e => e.ProductId == productId);
-        return image?.Name;
+        try
+        {
+            var image = await context.Images.FirstOrDefaultAsync(e => e.ProductId == productId);
+            return image?.Name;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting first image for product:{productId}",productId);
+            throw;
+        }
     }
     private async Task<Data_Layer.Entities.Image?> GetImageAsync(int id)
     {
-        return await context.Images.FirstOrDefaultAsync(e => e.Id == id);
+        try
+        {
+            return await context.Images.FirstOrDefaultAsync(e => e.Id == id);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while getting image by id : {id}",id);
+            throw;
+        }
     }
 }

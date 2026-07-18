@@ -31,7 +31,10 @@ public class ContactUsRepo(ILogger<ContactUsRepo> logger,Context context,IMapper
         {
             var model = await context.ContactMessages.FindAsync(id);
             if (model == null)
+            {
+                logger.LogWarning("contact did not found while getting contact us message with id: {id}",id);
                 return ActionResult.Failed("مدل پیدا نشد ");
+            }
             context.ContactMessages.Remove(model);
             await context.SaveChangesAsync();
             return ActionResult.Completed();
@@ -45,10 +48,18 @@ public class ContactUsRepo(ILogger<ContactUsRepo> logger,Context context,IMapper
 
     public async Task<List<ContactUsDto>> Get()
     {
-       return await context.ContactMessages
-           .AsNoTracking()
-           .OrderByDescending(e=>e.SendTime)
-           .ProjectTo<ContactUsDto>(mapper.ConfigurationProvider)
-           .ToListAsync();
+        try
+        {
+            return await context.ContactMessages
+                .AsNoTracking()
+                .OrderByDescending(e => e.SendTime)
+                .ProjectTo<ContactUsDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e,"error while get contact us list");
+            throw;
+        }
     }
 }
