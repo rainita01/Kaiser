@@ -64,7 +64,7 @@ public class CheckoutService(
                MerchantId = "9026f668-323b-416c-94a6-54fdc65b4d34",
                Amount = snapshot.TotalPrice,
                Description = $"پرداخت سفارش {snapshot.Id}",
-               CallbackUrl = $"https://localhost:7259/Payment/Callback?paymentId={paymentId}",
+               CallbackUrl = $"http://localhost:3000/Payment/Callback?paymentId={paymentId}",
            });
            if (request?.data == null || request.data.code != 100)
            {
