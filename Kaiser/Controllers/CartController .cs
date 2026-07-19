@@ -3,7 +3,6 @@ using Core_Layer.Repository.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-
 namespace Kaiser.Controllers;
 
 public class CartController(ICartRepo cartRepo) : ControllerBase

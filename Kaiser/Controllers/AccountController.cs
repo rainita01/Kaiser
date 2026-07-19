@@ -140,7 +140,11 @@ public class AccountController(UserManager<User> userManager,
 
         var result = await userManager.AddToRoleAsync(user, dto.RoleName);
         if (result.Succeeded)
+        {
+
+            await userManager.UpdateSecurityStampAsync(user);
             return Ok();
+        }
         return BadRequest(result.Errors.ToString());
     }
 
@@ -157,7 +161,11 @@ public class AccountController(UserManager<User> userManager,
             return BadRequest("حذف کردن نقش موفقیت آمیز نبود");
         var result = await userManager.RemoveFromRoleAsync(user, dto.RoleName);
         if (result.Succeeded)
+        {
+            
+            await userManager.UpdateSecurityStampAsync(user);
             return Ok();
+        }
         return BadRequest(result.Errors.ToString());
 
     }
