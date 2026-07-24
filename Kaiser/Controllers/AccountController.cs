@@ -1,9 +1,10 @@
 ﻿
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Core_Layer.Dtos.AccountDto;
-using Core_Layer.Dtos.AddressDto;
-using Core_Layer.Repository.Address;
+
 using Core_Layer.Repository.User;
+using Core_Layer.Services.Ghasedak;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,9 +17,9 @@ namespace Kaiser.Controllers;
 [ApiController]
 public class AccountController(UserManager<User> userManager,
     SignInManager<User> signInManager,
-    IAddressRepo addressRepo,
     RoleManager<Role> roleManager,
-    IUserRepo userRepo
+    IUserRepo userRepo,
+    ISmsServices smsServices
     ) : ControllerBase
 {
     [HttpPost("/Account/Login")]
@@ -35,6 +36,72 @@ public class AccountController(UserManager<User> userManager,
         return BadRequest(result.ToString());
         
     }
+    [HttpPost("LoginWithPhone")]
+    public async Task<IActionResult> LoginWithPhone(string phone)
+    {
+        if (phone.Length != 11)
+        {
+            return BadRequest("فرمت شماره تماس نادرست است");
+        }
+        var user = await userManager.Users
+            .FirstOrDefaultAsync(x => x.PhoneNumber == phone);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                UserName = phone,
+                PhoneNumber = phone,
+                PhoneNumberConfirmed = false
+            };
+
+            var createResult = await userManager.CreateAsync(user);
+
+            if (!createResult.Succeeded)
+                return BadRequest(createResult.Errors);
+        }
+
+        var code = await userManager.GenerateChangePhoneNumberTokenAsync(
+            user,
+            phone);
+
+        await smsServices.SendOtpAsync(phone, "Ghasedak", code);
+
+        return Ok(phone);
+    }
+    [HttpPost("VerifyPhone")]
+    public async Task<IActionResult> VerifyPhone(string phone,string code)
+    {
+        if (phone.Length != 11)
+        {
+            return BadRequest("فرمت شماره تماس نادرست است");
+        }
+
+        var user = await userManager.Users
+            .FirstOrDefaultAsync(x => x.PhoneNumber == phone);
+
+        if (user == null)
+            return BadRequest("کاربر یافت نشد.");
+
+        var valid = await userManager.VerifyChangePhoneNumberTokenAsync(
+            user,
+            code,
+            phone);
+
+        if (!valid)
+            return BadRequest("کد نامعتبر است.");
+
+        if (!user.PhoneNumberConfirmed)
+        {
+            user.PhoneNumberConfirmed = true;
+            await userManager.UpdateAsync(user);
+        }
+
+        await signInManager.SignInAsync(user, isPersistent: false);
+
+        return Ok();
+    }
+
     [HttpPost("Account/Register")]
     public async Task<IActionResult> Register([FromBody]RegisterUserDto dto)
     {

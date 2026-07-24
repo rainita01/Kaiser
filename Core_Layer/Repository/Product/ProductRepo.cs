@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Cryptography.X509Certificates;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.Product;
 using Core_Layer.Repository.Image;
@@ -59,9 +60,6 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
             var product = await GetProduct(dto.Id);
             if (product == null)
                 return ActionResult.Failed("محصول پیدا نشد!");
-            
-
-
             product.Name = dto.Name ?? product.Name;
             product.Slug = textServices.GenerateSlug(product.Name);
             product.Description = dto.Description ?? product.Description;
@@ -101,7 +99,7 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
         }
     }
   
-    public async Task<List<ProductCardDto>> GetProductPagesAsync(
+    public async Task<ProductPageDto> GetProductPagesAsync(
         int page,
         int? pageSize,
         decimal? minPrice,
@@ -109,22 +107,35 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
         SortProduct? sort,
         string? search,
         int? categoryId,
-        bool? isBestSale
+        bool? isBestSale,
+        bool? haveCost
             )
     {
+        page = Math.Max(page, 1);
         var actualPageSize = pageSize ?? 10;
         var skip = (page - 1) * actualPageSize;
 
 
-        var query = context.Products
-            .AsNoTracking()
-            .Where(e => (categoryId == null || e.CategoryId == categoryId) &&
-                        (minPrice == null || e.Price >= minPrice) &&
-                        (maxPrice == null || e.Price <= maxPrice) &&
-                        (isBestSale == null|| e.IsBestSell == isBestSale) &&
-                        (string.IsNullOrEmpty(search) || e.Name.Contains(search)));
+        var query = context.Products.AsNoTracking();
 
-            
+        if (categoryId.HasValue)
+            query = query.Where(x => x.CategoryId == categoryId);
+
+        if (minPrice.HasValue)
+            query = query.Where(x => x.Price >= minPrice);
+
+        if (maxPrice.HasValue)
+            query = query.Where(x => x.Price <= maxPrice);
+
+        if (isBestSale.HasValue)
+            query = query.Where(x => x.IsBestSell == isBestSale);
+
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(x => EF.Functions.Like(x.Name, $"%{search}%"));
+
+        if (haveCost == true)
+            query = query.Where(x => x.DiscountPercent > 0);
+
         query = sort switch
         {
             SortProduct.MostViewed => query.OrderByDescending(e => e.ProductViews!.Count),
@@ -134,8 +145,7 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
 
             _ => query.OrderBy(e => e.Id)
         };
-
-        // اعمال صفحه‌بندی و ProjectTo
+        var count = query.Count() / actualPageSize;
         try
         {
             var items = await query
@@ -143,7 +153,7 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
                 .Take(actualPageSize)
                 .ProjectTo<ProductCardDto>(mapper.ConfigurationProvider)
                 .ToListAsync();
-            return items;
+            return new ProductPageDto() { ProductCards = items,PageCount = count};
         }
         catch (Exception e)    
         {

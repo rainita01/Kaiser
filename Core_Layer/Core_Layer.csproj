@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Dtos\GhasedakDto\" />
     <Folder Include="Middlewares\" />
     <Folder Include="Services\Api\" />
     <Folder Include="Services\ImageServices\" />
@@ -21,6 +22,8 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Azure.Core" Version="1.47.1" />
+    <PackageReference Include="GhasedakSms.Core" Version="1.0.6.4" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="9.1.0" />
  
   </ItemGroup>
 

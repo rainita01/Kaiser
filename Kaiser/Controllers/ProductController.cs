@@ -19,16 +19,16 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
     public async Task<IActionResult> GetProducts(
         [FromQuery] string? search,
         [FromQuery] int? pageSize,
-        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? minPrice,  
         [FromQuery] decimal? maxPrice,
         [FromQuery] SortProduct? sort,
         [FromQuery] int? categoryId,
+        [FromQuery] bool? haveCost,
         [FromQuery] bool? isBestSale,
         [FromQuery] int page = 1)
     {
-        List<ProductCardDto> products =
-            await productRepo.GetProductPagesAsync(page, pageSize, minPrice, maxPrice, sort, search, categoryId,isBestSale);
-        return Ok(products);
+        var result = await productRepo.GetProductPagesAsync(page, pageSize, minPrice, maxPrice, sort, search, categoryId,isBestSale,haveCost);
+        return Ok(result);
     }
 
     [HttpGet("Products/BestSales")]

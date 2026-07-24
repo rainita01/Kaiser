@@ -14,6 +14,7 @@ using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.Api;
 using Core_Layer.Services.BackGroundServices;
 using Core_Layer.Services.CheckOut;
+using Core_Layer.Services.Ghasedak;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
 using Core_Layer.Services.Seed;
@@ -28,6 +29,8 @@ using Serilog.Sinks.MSSqlServer;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Logger
 Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine("SERILOG ERROR: " + msg));
 var columnOptions = new ColumnOptions();
 columnOptions.Store.Remove(StandardColumn.Properties); // skip XML blob column, we'll use structured columns instead
@@ -36,20 +39,14 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.MSSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("KaiserShop"),
-        sinkOptions: new MSSqlServerSinkOptions
-        {
-            TableName = "Logs",
-            AutoCreateSqlTable = true, // creates the table on first run if it doesn't exist
-            SchemaName = "dbo"
-        },
-        columnOptions: columnOptions,
-        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information // extra safety: only Warning+ hits SQL
-    )
+    .WriteTo.Seq("http://localhost:5341/")
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+
+#endregion
+
 // Add services to the container.
 builder.Services.AddHostedService<LogCleanupService>();
 builder.Services.AddControllers();
@@ -67,6 +64,8 @@ builder.Services.AddDbContext<Context>(e =>
 builder.Services.AddScoped<ImageServices>();
 builder.Services.AddScoped<TextServices>();
 builder.Services.AddScoped<ICheckOutServices, CheckoutService>();
+builder.Services.Configure<GhasedakOption>(builder.Configuration.GetSection("Ghasedak"));
+builder.Services.AddScoped<ISmsServices, GhasedakSmsService>();
 
 #endregion
 #region Repositories

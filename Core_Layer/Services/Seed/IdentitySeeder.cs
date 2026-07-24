@@ -25,8 +25,6 @@ public class IdentitySeeder
                 UserName = "Sysadmin",
                 Email = "admin@test.com",
                 EmailConfirmed = true,
-                FirstName = "admin",
-                LastName = "admini"
             };
 
             await userManager.CreateAsync(admin, "2026admin1405");

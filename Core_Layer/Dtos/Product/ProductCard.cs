@@ -15,3 +15,9 @@ public class ProductCardDto
     public string? Image { get; set; }
     public DateTime CreateTime { get; set; }
 }
+
+public record ProductPageDto
+{
+    public List<ProductCardDto> ProductCards { get; set; }
+    public int PageCount { get; set; }
+}
