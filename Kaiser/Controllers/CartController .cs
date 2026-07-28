@@ -18,8 +18,14 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
         }
 
         var checkout = await cartRepo.CheckQuantitiesAsync(userId);
-        var result = await cartRepo.GetUserCartItemsAsync(userId);
-        return Ok(result);
+        if (checkout.Success)
+        {
+            var result = await cartRepo.GetUserCartItemsAsync(userId);
+            return Ok(result);
+        }
+        
+        return BadRequest("مشکل در چک کردن موجودی محصول ها ");
+        
 
     }
 

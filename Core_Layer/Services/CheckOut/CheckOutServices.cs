@@ -65,10 +65,11 @@ public class CheckoutService(
                Description = $"پرداخت سفارش {snapshot.Id}",
                CallbackUrl = $"http://localhost:3000/Payment/Callback?paymentId={paymentId}",
            });
-           if (request?.data == null || request.data.code != 100)
+            if (request.data.code != 100)
            {
                logger.LogError("request to zarinpal get failed {request}",request);
-               throw new RequestFailedException(request.errors.ToString());
+               string? erorrs = request.errors?.ToString();
+               throw new RequestFailedException(erorrs?? "error while requesting to zarinpal server");
            }
            var payment = new Payment
            {
@@ -125,7 +126,7 @@ public class CheckoutService(
                 Authority = authority,
                 Amount = payment.Amount
             });
-            if (verify.Data?.Code != 100 && verify.Data?.Code != 101)
+            if (verify.Data.Code != 101)
             {
                 payment.State = PaymentState.Failed;
                 await context.SaveChangesAsync();

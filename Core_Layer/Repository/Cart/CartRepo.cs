@@ -26,7 +26,7 @@ public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :
 
             Data_Layer.Entities.Cart cart;
             var user = await context.Users
-                .Include(e => e.Carts)
+                .Include(e => e.Carts)!
                 .ThenInclude(s=>s.CartItems)
                 .FirstOrDefaultAsync(e => e.Id == itemDto.UserId);
             if (user == null)
@@ -48,7 +48,7 @@ public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :
             }
             else
             {
-                cart = new Data_Layer.Entities.Cart() { UserId = itemDto.UserId };
+                cart = new Data_Layer.Entities.Cart() { UserId = itemDto.UserId! };
                 context.Carts.Add(cart);
             }
            
@@ -136,7 +136,7 @@ public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :
         }
     }
 
-    public async Task<List<CartItemDto>> GetUserCartItemsAsync(string userId)
+    public async Task<List<CartItemDto>?> GetUserCartItemsAsync(string userId)
     {
         try
         {

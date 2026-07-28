@@ -12,7 +12,6 @@ using Core_Layer.Repository.Product;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.Api;
-using Core_Layer.Services.BackGroundServices;
 using Core_Layer.Services.CheckOut;
 using Core_Layer.Services.Ghasedak;
 using Core_Layer.Services.ImageServices;
@@ -47,8 +46,6 @@ builder.Host.UseSerilog();
 
 #endregion
 
-// Add services to the container.
-builder.Services.AddHostedService<LogCleanupService>();
 builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -158,7 +155,6 @@ using (var scope = app.Services.CreateScope())
     await IdentitySeeder.SeedAsync(scope.ServiceProvider);
 }
 app.UseCors("AllowFrontend");
-
 if (app.Environment.IsDevelopment()) 
 {
     //app.MapOpenApi();

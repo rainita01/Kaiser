@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core_Layer.Dtos.Product;

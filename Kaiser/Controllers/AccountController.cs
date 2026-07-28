@@ -1,5 +1,4 @@
 ﻿
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Core_Layer.Dtos.AccountDto;
 
