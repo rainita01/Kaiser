@@ -1,14 +1,14 @@
 ﻿
-using System.Security.Claims;
 using Core_Layer.Dtos.AccountDto;
-
 using Core_Layer.Repository.User;
 using Core_Layer.Services.Ghasedak;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 
 namespace Kaiser.Controllers;
@@ -21,6 +21,8 @@ public class AccountController(UserManager<User> userManager,
     ISmsServices smsServices
     ) : ControllerBase
 {
+
+    [EnableRateLimiting("login")]
     [HttpPost("/Account/Login")]
     public async Task<IActionResult> Login([FromBody]LoginUserDto dto)
     {
@@ -35,6 +37,7 @@ public class AccountController(UserManager<User> userManager,
         return BadRequest(result.ToString());
         
     }
+    [EnableRateLimiting("login")]
     [HttpPost("LoginWithPhone")]
     public async Task<IActionResult> LoginWithPhone(string phone)
     {
@@ -100,7 +103,7 @@ public class AccountController(UserManager<User> userManager,
 
         return Ok();
     }
-
+    [EnableRateLimiting("login")]
     [HttpPost("Account/Register")]
     public async Task<IActionResult> Register([FromBody]RegisterUserDto dto)
     {

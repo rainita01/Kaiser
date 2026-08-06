@@ -15,7 +15,7 @@ public class AddressController(IAddressRepo addressRepo) : ControllerBase
       var result =  await addressRepo.AddCityAsync(cityName,provinceId);
       if (result.Success)
       {
-          return Ok();
+          return Created();
       }
       return BadRequest(result.Message);
     }
@@ -26,7 +26,7 @@ public class AddressController(IAddressRepo addressRepo) : ControllerBase
         var result = await addressRepo.AddProvinceAsync(provinceName);
         if (result.Success)
         {
-            return Ok();
+            return Created();
         }
         return BadRequest(result.Message);
     }
@@ -92,7 +92,7 @@ public class AddressController(IAddressRepo addressRepo) : ControllerBase
         var result = await addressRepo.AddAsync(dto, userid);
         if (result.Success)
         {
-            return Ok();
+            return Created();
         }
         return BadRequest(result.Message);
     }

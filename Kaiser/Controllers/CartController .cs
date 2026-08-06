@@ -45,7 +45,7 @@ public class CartController(ICartRepo cartRepo) : ControllerBase
         var result = await cartRepo.AddItemAsync(cartitem);
         if (result.Success)
         {
-            return Ok();
+            return Created();
         }
 
         return BadRequest(result.Message);

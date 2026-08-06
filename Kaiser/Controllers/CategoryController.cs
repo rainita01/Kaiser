@@ -23,13 +23,9 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
     {
         var result = await categoryRepo.AddAsync(dto);
         if (result.Success)
-        {
-            return Ok();
-        }
-        else
-        {
-            return BadRequest();
-        }
+            return Created();
+        return BadRequest();
+        
     }
     [HttpDelete("CategoryManager/Remove/{id}")]
     public async Task<IActionResult> RemoveCategory(int id)
@@ -51,10 +47,8 @@ public class CategoryController(ICategoryRepo categoryRepo) : ControllerBase
         {
             return Ok();
         }
-        else
-        {
-            return BadRequest();
-        }
+        return BadRequest();
+        
     }
 
 }

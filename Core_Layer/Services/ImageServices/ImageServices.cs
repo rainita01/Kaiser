@@ -16,7 +16,7 @@ public class ImageServices(IWebHostEnvironment environment)
     public async Task<string> SaveImageAndGiveName(IFormFile image)
     {
         var guid = Guid.NewGuid();
-        var imagename = guid.ToString() + '_' +  image.FileName;
+        var imagename = guid + Path.GetExtension(image.FileName);
         var path = Path.Combine(environment.ContentRootPath, "Uploads",imagename);        
         var fileStream = new FileStream(path,FileMode.CreateNew);
         await using (fileStream)

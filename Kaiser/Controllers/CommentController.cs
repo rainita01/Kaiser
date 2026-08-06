@@ -43,7 +43,7 @@ public class CommentController(ICommentRepo commentRepo) : ControllerBase
       var result = await commentRepo.AddAsync(dto, user);
 
       if (result.Success)
-          return Ok();
+          return Created();
       return BadRequest(result.Message);
   }
 

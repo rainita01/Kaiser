@@ -26,7 +26,7 @@ public class ContactUsController(IContactUsRepo contactUsRepo) : ControllerBase
 
         if (result.Success)
         {
-            return Ok();
+            return Created();
         }
 
         return BadRequest("ناموفق در ارسال");

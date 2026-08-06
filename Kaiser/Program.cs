@@ -20,7 +20,9 @@ using Core_Layer.Services.Seed;
 using Core_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Data_Layer.Entities;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
@@ -38,11 +40,15 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.Seq("http://localhost:5341/")
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto;
+});
 
 #endregion
 
@@ -99,7 +105,8 @@ builder.Services.AddAutoMapper(mapp =>
 
 builder.Services.AddHttpClient<IZarinPalServices, ZarinPalServices>(client =>
 {
-    client.BaseAddress = new Uri("https://sandbox.zarinpal.com/");
+    var uri = builder.Configuration["Payment"];
+    client.BaseAddress = new Uri(uri!);
 });
 
 builder.Services.AddIdentity<User, Role>(option =>
@@ -110,29 +117,53 @@ builder.Services.AddIdentity<User, Role>(option =>
         option.User.RequireUniqueEmail = false;
         option.Password.RequireUppercase = false;
         option.Password.RequireNonAlphanumeric = false;
+        option.Password.RequiredLength = 10;
     })
     .AddEntityFrameworkStores<Context>()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<IdentityErrorsToPersian>();
 
+var frontendUrl =
+    builder.Configuration["Cors:FrontendUrl"];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-     
-        policy.WithOrigins("http://localhost:3000")  
-            .AllowAnyHeader()                      
-            .AllowAnyMethod()                   
-            .AllowCredentials();                   
+        policy
+            .WithOrigins(frontendUrl!)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("login", limiter =>
+    {
+        limiter.PermitLimit = 5;
+        limiter.Window = TimeSpan.FromMinutes(1);
+        limiter.QueueLimit = 0;
+    });
+
+
+    options.AddFixedWindowLimiter("api", limiter =>
+    {
+        limiter.PermitLimit = 200;
+        limiter.Window = TimeSpan.FromMinutes(1);
+    });
+
+
+    options.RejectionStatusCode = 429;
+});
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "Kaiser.shop";
     options.Cookie.HttpOnly = true;
 
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.Events.OnRedirectToLogin = context =>
     {
@@ -146,8 +177,9 @@ builder.Services.ConfigureApplicationCookie(options =>
         return Task.CompletedTask;
     };
 });
-
+builder.Services.AddSwaggerGen();
 var app = builder.Build();
+app.UseForwardedHeaders();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseSerilogRequestLogging();
 using (var scope = app.Services.CreateScope())
@@ -160,17 +192,26 @@ if (app.Environment.IsDevelopment())
     //app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
-    
-
 }
+else 
+{
+    app.UseHsts();
+}
+var uploadPath = Path.Combine(
+    app.Environment.ContentRootPath,
+    "Uploads");
 
+if (!Directory.Exists(uploadPath))
+{
+    Directory.CreateDirectory(uploadPath);
+}
 app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath,"Uploads")),
     RequestPath = "/uploads"
 });
 
-
+app.UseRateLimiter();
 // app.UseHttpsRedirection();
 app.UseAuthentication();
 
