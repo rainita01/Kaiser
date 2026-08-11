@@ -26,11 +26,10 @@ public class PaymentController(ICheckOutServices checkOutServices) : ControllerB
 
         [HttpGet("Payment/Callback")]
         public async Task<IActionResult> PaymentCallback(
-            [FromQuery] Guid paymentId,
             [FromQuery]string authority,
             [FromQuery]string status)
         {
-        var result = await checkOutServices.HandleCallbackAsync(paymentId, authority, status);
+        var result = await checkOutServices.HandleCallbackAsync(authority, status);
   
 
          return Ok(result);

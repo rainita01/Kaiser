@@ -10,13 +10,12 @@ public class SnapShot
     public List<SnapShotItem> Items { get; set; }
     public string UserId { get; set; }
     public User User { get; set; }  
- 
     public string City { get; set; }
     public string Province { get; set; }
     public string FullAddress { get; set; }
     public string PostCode { get; set; }
     public string PhoneNumber { get; set; } 
-    public Payment? Payment { get; set; }
+    public string? Authority { get; set; }
 
 }
 

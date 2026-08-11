@@ -25,12 +25,12 @@ public class CartAndSnapShotProfile : Profile
             .ForMember(e => e.ProductId, s => s.MapFrom(e => e.ProductId))
             .ForMember(e => e.ProductName, s => s.MapFrom(e => e.Product.Name))
             .ForMember(e => e.SnapShotId, s => s.Ignore());
-        CreateMap<CartItemDto,SnapShotItem>().ForMember(e => e.UnitPrice, s => s.MapFrom(e => e.Product.Price))
+        CreateMap<CartItemDto,SnapShotItem>().ForMember(e => e.UnitPrice, s => s.MapFrom(e => e.Price))
             .ForMember(e => e.Count, s => s.MapFrom(e => e.Quantity))
-            .ForMember(e => e.Discount, s => s.MapFrom(e => e.Product.DiscountPercent))
+            .ForMember(e => e.Discount, s => s.MapFrom(e => e.DiscountPercent))
             .ForMember(e => e.Id, s => s.Ignore())
             .ForMember(e => e.ProductId, s => s.MapFrom(e => e.ProductId))
-            .ForMember(e => e.ProductName, s => s.MapFrom(e => e.Product.Name))
+            .ForMember(e => e.ProductName, s => s.MapFrom(e => e.Name))
             .ForMember(e => e.SnapShotId, s => s.Ignore());
 
         CreateMap<SnapShotDto, SnapShot>()

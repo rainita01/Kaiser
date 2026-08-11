@@ -12,11 +12,6 @@ public class SnapShotConfiguration :IEntityTypeConfiguration<SnapShot>
             .WithOne(e => e.SnapShot)
             .HasForeignKey(e => e.SnapShotId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne(s => s.Payment)
-            .WithOne(p => p.SnapShot)
-            .HasForeignKey<Payment>(p => p.SnapShotId)
-            .OnDelete(DeleteBehavior.Restrict);
-
     }
 }
 public class SnapShotItemConfiguration : IEntityTypeConfiguration<SnapShotItem>

@@ -7,5 +7,5 @@ namespace Core_Layer.Services.CheckOut;
 public interface ICheckOutServices
 {
     public Task<string> CheckOutAsync(string userId, int addressId);
-    public Task<PaymentResultDto> HandleCallbackAsync(Guid paymentId, string authority, string status);
+    public Task<PaymentResultDto> HandleCallbackAsync(string authority, string status);
 }

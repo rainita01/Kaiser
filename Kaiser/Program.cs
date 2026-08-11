@@ -1,4 +1,5 @@
-﻿using Core_Layer.Middlewares;
+﻿using Core_Layer.Dtos.PaymentDto;
+using Core_Layer.Middlewares;
 using Core_Layer.Profiles;
 using Core_Layer.Repository.Address;
 using Core_Layer.Repository.Cart;
@@ -9,10 +10,12 @@ using Core_Layer.Repository.Image;
 using Core_Layer.Repository.Order;
 using Core_Layer.Repository.Payment;
 using Core_Layer.Repository.Product;
+using Core_Layer.Repository.Sanpshot;
 using Core_Layer.Repository.User;
 using Core_Layer.Repository.Visitors;
 using Core_Layer.Services.Api;
 using Core_Layer.Services.CheckOut;
+using Core_Layer.Services.GetServices;
 using Core_Layer.Services.Ghasedak;
 using Core_Layer.Services.ImageServices;
 using Core_Layer.Services.Persian;
@@ -25,6 +28,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 
@@ -69,6 +73,7 @@ builder.Services.AddScoped<TextServices>();
 builder.Services.AddScoped<ICheckOutServices, CheckoutService>();
 builder.Services.Configure<GhasedakOption>(builder.Configuration.GetSection("Ghasedak"));
 builder.Services.AddScoped<ISmsServices, GhasedakSmsService>();
+builder.Services.AddScoped<IGetCountServices, GetCountsServices>();
 
 #endregion
 #region Repositories
@@ -84,6 +89,7 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IPaymentRepo,PaymentRepo>();
+builder.Services.AddScoped<ISnapshotRepo, SnapshotRepo>();
 #endregion
 
 #region Mapper
@@ -102,11 +108,16 @@ builder.Services.AddAutoMapper(mapp =>
 });
 
 #endregion
+builder.Services.Configure<PaymentOption>(
+    builder.Configuration.GetSection("Payment"));
 
-builder.Services.AddHttpClient<IZarinPalServices, ZarinPalServices>(client =>
+builder.Services.AddHttpClient<IZarinPalServices, ZarinPalServices>((serviceProvider, client) =>
 {
-    var uri = builder.Configuration["Payment"];
-    client.BaseAddress = new Uri(uri!);
+    var options = serviceProvider
+        .GetRequiredService<IOptions<PaymentOption>>()
+        .Value;
+
+    client.BaseAddress = new Uri(options.BaseUrl);
 });
 
 builder.Services.AddIdentity<User, Role>(option =>

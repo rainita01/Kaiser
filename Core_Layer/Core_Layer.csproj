@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Repository\Get\**" />
+    <EmbeddedResource Remove="Repository\Get\**" />
+    <None Remove="Repository\Get\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Data_Layer\Data_Layer.csproj" />
   </ItemGroup>
 

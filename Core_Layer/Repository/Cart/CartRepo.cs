@@ -153,7 +153,6 @@ public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :
                     Quantity = ci.Quantity,
                     ImageName = ci.Product.Images.FirstOrDefault().Name,
                     UserId = userId,
-                    Product = mapper.Map<ProductDto>(ci.Product)
                 }).ToListAsync();
         }
         catch (Exception e)

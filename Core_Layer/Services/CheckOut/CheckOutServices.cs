@@ -3,14 +3,14 @@ using Azure;
 using Core_Layer.Dtos.PaymentDto;
 using Core_Layer.Repository.Address;
 using Core_Layer.Repository.Cart;
-using Core_Layer.Repository.Payment;
 using Core_Layer.Repository.Product;
+using Core_Layer.Repository.Sanpshot;
 using Core_Layer.Services.Api;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Extensions.Options;
 
 
 namespace Core_Layer.Services.CheckOut;
@@ -20,9 +20,10 @@ public class CheckoutService(
     IMapper mapper,
     ICartRepo cartRepo,
     IAddressRepo addressRepo,
-    IPaymentRepo paymentRepo,
+    ISnapshotRepo snapshotRepo,
     IZarinPalServices zarinPal,
     IProductRepo productRepo,
+    IOptions<PaymentOption > paymentOption,
     ILogger<CheckoutService> logger) : ICheckOutServices
 {
 
@@ -55,15 +56,12 @@ public class CheckoutService(
                PhoneNumber = address.PhoneNumber,
            };
            snapshot.TotalPrice = (long)snapshot.Items.Sum(e => e.UnitPrice * (1 - e.Discount / 100m) * e.Count) + snapshot.ShippingCost;
-           await context.SnapShots.AddAsync(snapshot);
-           await context.SaveChangesAsync();
-           var paymentId = Guid.NewGuid();
             var request = await zarinPal.RequestAsync(new ZarinPalRequestDto()
            {
-               MerchantId = "9026f668-323b-416c-94a6-54fdc65b4d34",
                Amount = snapshot.TotalPrice,
                Description = $"پرداخت سفارش {snapshot.Id}",
-               CallbackUrl = $"http://localhost:3000/Payment/Callback?paymentId={paymentId}",
+               CallbackUrl = paymentOption.Value.CallbackUrl,
+               MerchantId = paymentOption.Value.MerchantId
            });
             if (request.data.code != 100)
            {
@@ -71,21 +69,11 @@ public class CheckoutService(
                string? erorrs = request.errors?.ToString();
                throw new RequestFailedException(erorrs?? "error while requesting to zarinpal server");
            }
-           var payment = new Payment
-           {
-               Id = paymentId,
-               SnapShotId = snapshot.Id,
-               Amount = snapshot.TotalPrice,
-               State = PaymentState.Requested,
-               CreatedAt = DateTime.UtcNow,
-               Authority = request.data.authority
-           };
-           await context.Payments.AddAsync(payment);
+           snapshot.Authority = request.data.authority;
            await context.SaveChangesAsync();
            await transaction.CommitAsync();
-           logger.LogInformation("request to zarin pal completed {@payment}",payment);
-           return payment.Authority;
-
+           logger.LogInformation("request to zarin pal completed ");
+           return request.data.authority;
        }
        catch (Exception e)
        { logger.LogError(e,"error in method checkout for user : {userId}",userId);
@@ -94,68 +82,63 @@ public class CheckoutService(
        }
     }
 
-    public async Task<PaymentResultDto> HandleCallbackAsync(Guid paymentId, string authority, string status)
+    public async Task<PaymentResultDto> HandleCallbackAsync(string authority, string status)
     {
 
         var transaction = await context.Database.BeginTransactionAsync();
         try
         {
-            var payment = await paymentRepo.GetPaymentAsync(paymentId, authority);
-
-            if (payment.State == PaymentState.Succeeded)
-            {
-                logger.LogWarning("payment succeeded before {status},authorize:{authorize},payment: {payment}", status, authority, paymentId);
-                return new PaymentResultDto(true, payment.RefId, "قبلا تایید شده");
-            }
-            if (payment.State == PaymentState.Failed)
-            {
-                logger.LogWarning("payment failed {status},authorize:{authorize},payment: {payment}", status, authority, paymentId);
-                return new PaymentResultDto(false, null, "پرداخت ناموفق بود");
-            }
-
             if (status != "OK")
             {
-                payment.State = PaymentState.Failed;
                 await context.SaveChangesAsync();
-                logger.LogWarning("payment failed {status},authorize:{authorize},payment: {payment}",status,authority,paymentId);
+                logger.LogWarning("payment failed {status},authorize:{authorize}",status,authority);
+                return new PaymentResultDto(false, null, "پرداخت لغو شد");
+            }
+            var snapshot = await snapshotRepo.GetAsync(authority);
+
+            if (snapshot == null)
+            {
+                logger.LogWarning("payment failed {status},authorize:{authorize}", status, authority);
                 return new PaymentResultDto(false, null, "پرداخت لغو شد");
             }
             var verify = await zarinPal.VerifyAsync(new ZarinPalVerifyDto()
             {
-                MerchantId = "9026f668-323b-416c-94a6-54fdc65b4d34",
                 Authority = authority,
-                Amount = payment.Amount
+                Amount = snapshot.TotalPrice,
+                MerchantId = paymentOption.Value.MerchantId
             });
             if (verify.Data.Code != 101)
             {
-                payment.State = PaymentState.Failed;
                 await context.SaveChangesAsync();
                 logger.LogWarning("verify purchase failed {@result}",verify);
                 return new PaymentResultDto(false, null, "تایید پرداخت ناموفق بود");
             }
-            foreach (var item in payment.SnapShot.Items)
+            var payment = new Payment()
+            {
+                Id = Guid.NewGuid(),
+                Amount = snapshot.TotalPrice,
+                Authority = snapshot.Authorize,
+                CreatedAt = DateTime.Now,
+                RefId = verify.Data.RefId.ToString(),
+                SnapShotId = (Guid)snapshot.Id!
+            };
+            foreach (var item in snapshot.Items)
             {
                 var affected = await productRepo.ExecuteProductQuantityCostAsync(item.ProductId, item.Count);
                 if (!affected.Success)
                 {
-
-                    payment.State = PaymentState.Succeeded;
-                    payment.RefId = verify.Data.RefId.ToString();
-                    payment.VerifiedAt = DateTime.UtcNow;
+                    payment.State = PaymentState.Failed;
                     await context.SaveChangesAsync();
-                    await transaction.RollbackAsync();
                     logger.LogWarning("purchase succeed but there is less stock of product than request {itemName} ,{id} موجودی {count}", item.ProductName, item.Id,item.Count);
                     return new PaymentResultDto(true, payment.RefId,
                         "پرداخت موفق بود ولی موجودی محصول کافی نیست، با پشتیبانی تماس بگیرید");
                 }
             }
-            var order = mapper.Map<Order>(payment.SnapShot);
+            var order = mapper.Map<Order>(snapshot);
             order.PaymentId = payment.Id;
             await context.Orders.AddAsync(order);
             payment.State = PaymentState.Succeeded;
-            payment.RefId = verify.Data.RefId.ToString();
             payment.VerifiedAt = DateTime.UtcNow;
-            payment.SnapShot.State = SnapShotState.Converted;
             var cart = await context.Carts.Include(c => c.CartItems)
                 .FirstOrDefaultAsync(c => c.UserId == payment.SnapShot.UserId);
             if (cart?.CartItems != null)
