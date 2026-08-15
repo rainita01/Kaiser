@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.Category;
+﻿namespace Busines_Layer.Dtos.Category;
 
 public class UpdateCategoryDto
 {

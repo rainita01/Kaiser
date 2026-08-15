@@ -1,26 +1,27 @@
-﻿using Core_Layer.Dtos.PaymentDto;
-using Core_Layer.Middlewares;
-using Core_Layer.Profiles;
-using Core_Layer.Repository.Address;
-using Core_Layer.Repository.Cart;
-using Core_Layer.Repository.Category;
-using Core_Layer.Repository.Comment;
-using Core_Layer.Repository.ContactUs;
-using Core_Layer.Repository.Image;
-using Core_Layer.Repository.Order;
-using Core_Layer.Repository.Payment;
-using Core_Layer.Repository.Product;
-using Core_Layer.Repository.Sanpshot;
-using Core_Layer.Repository.User;
-using Core_Layer.Repository.Visitors;
-using Core_Layer.Services.Api;
-using Core_Layer.Services.CheckOut;
-using Core_Layer.Services.GetServices;
-using Core_Layer.Services.Ghasedak;
-using Core_Layer.Services.ImageServices;
-using Core_Layer.Services.Persian;
-using Core_Layer.Services.Seed;
-using Core_Layer.Services.TextServices;
+﻿using Busines_Layer.Dtos.PaymentDto;
+using Busines_Layer.Middlewares;
+using Busines_Layer.Profiles;
+using Busines_Layer.Repository.Address;
+using Busines_Layer.Repository.Cart;
+using Busines_Layer.Repository.Category;
+using Busines_Layer.Repository.Comment;
+using Busines_Layer.Repository.ContactUs;
+using Busines_Layer.Repository.Image;
+using Busines_Layer.Repository.Order;
+using Busines_Layer.Repository.Payment;
+using Busines_Layer.Repository.Product;
+using Busines_Layer.Repository.Sanpshot;
+using Busines_Layer.Repository.User;
+using Busines_Layer.Repository.Visitors;
+using Busines_Layer.Services.Api;
+using Busines_Layer.Services.Api.Postex;
+using Busines_Layer.Services.CheckOut;
+using Busines_Layer.Services.GetServices;
+using Busines_Layer.Services.Ghasedak;
+using Busines_Layer.Services.ImageServices;
+using Busines_Layer.Services.Persian;
+using Busines_Layer.Services.Seed;
+using Busines_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -38,10 +39,10 @@ var builder = WebApplication.CreateBuilder(args);
 #region Logger
 Serilog.Debugging.SelfLog.Enable(msg => Console.WriteLine("SERILOG ERROR: " + msg));
 var columnOptions = new ColumnOptions();
-columnOptions.Store.Remove(StandardColumn.Properties); // skip XML blob column, we'll use structured columns instead
+columnOptions.Store.Remove(StandardColumn.Properties);
 columnOptions.Store.Add(StandardColumn.LogEvent);
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
+    //.ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .CreateLogger();
@@ -58,8 +59,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddControllers();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<Context>(e =>
 {
@@ -74,6 +73,7 @@ builder.Services.AddScoped<ICheckOutServices, CheckoutService>();
 builder.Services.Configure<GhasedakOption>(builder.Configuration.GetSection("Ghasedak"));
 builder.Services.AddScoped<ISmsServices, GhasedakSmsService>();
 builder.Services.AddScoped<IGetCountServices, GetCountsServices>();
+builder.Services.AddHttpClient<IPostexServices, PostexServices>();
 
 #endregion
 #region Repositories

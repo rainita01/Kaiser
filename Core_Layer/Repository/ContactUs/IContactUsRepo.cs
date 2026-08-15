@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.ContactUsDto;
+﻿using Busines_Layer.Dtos.ContactUsDto;
 
-namespace Core_Layer.Repository.ContactUs;
+namespace Busines_Layer.Repository.ContactUs;
 
 public interface IContactUsRepo
 {

@@ -1,3 +1,3 @@
-﻿namespace Core_Layer.Dtos.PaymentDto;
+﻿namespace Busines_Layer.Dtos.PaymentDto;
 
     public record PaymentResultDto(bool Success, string? RefId, string Message);

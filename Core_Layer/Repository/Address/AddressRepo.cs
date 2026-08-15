@@ -1,14 +1,13 @@
 ﻿using System.Data.SqlTypes;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.AddressDto;
+using Busines_Layer.Dtos.AddressDto;
 using Data_Layer.Context;
-using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 
-namespace Core_Layer.Repository.Address;
+namespace Busines_Layer.Repository.Address;
 
 public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context context) : IAddressRepo
 {
@@ -42,8 +41,10 @@ public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context cont
             }
 
             address.PhoneNumber = dto.PhoneNumber ?? address.PhoneNumber;
-            address.CityId = dto.CityId ?? address.CityId;
-            address.ProvinceId = dto.ProvinceId ?? address.ProvinceId;
+            address.city_code = dto.city_code ?? address.city_code;
+            address.city_name = dto.city_name ?? address.city_name;
+            address.province_code = dto.province_code ?? address.province_code;
+            address.province_name = dto.province_name ?? address.province_name;
             address.Firstname = dto.Firstname ?? address.Firstname;
             address.Lastname = dto.Lastname ?? address.Lastname;
             address.FullAddress = dto.FullAddress ?? address.FullAddress;
@@ -101,96 +102,11 @@ public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context cont
         }
     }
 
-    public async Task<ActionResult> AddProvinceAsync(string name)
-    {
-        try
-        {
-            if (await context.Provinces.AnyAsync(e=>e.Name == name))
-            {
-                return ActionResult.Failed("استان با همچین نامی وجود دارد");
-
-            }
-
-            var provice = new Province() { Name = name };
-
-            await context.Provinces.AddAsync(provice);
-            await context.SaveChangesAsync();
-            return ActionResult.Completed();
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error while adding province : {name}", name);
-            return ActionResult.Failed(e.Message);
-        }
-
-       
-    }
-
-    public async Task<ActionResult> AddCityAsync(string name,int provinceId)
-    {
-        try
-        {
-            if (await context.Cities.AnyAsync(e => e.Name == name) && await context.Provinces.AnyAsync(s=>s.Id == provinceId))
-            {
-                return ActionResult.Failed("شهری با همچین نامی وجود دارد یا استان پیدا نشد");
-            }
-
-            var city = new City { Name = name,ProvinceId = provinceId};
-
-            await context.Cities.AddAsync(city);
-            await context.SaveChangesAsync();
-            return ActionResult.Completed();
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error while adding city name:{name}, provinceId:{provinceId}", name,provinceId);
-            return ActionResult.Failed(e.Message);
-        }
-    }
-
-    public async Task<ActionResult> DeleteCityAsync(int id)
-    {
-        try
-        {
-            var result = await context.Cities.Where(e => e.Id == id).ExecuteDeleteAsync();
-            if (result == 0)
-            {
-                return ActionResult.Failed("شهر پیدا نشد");
-            }
-            return ActionResult.Completed();
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error while deleting city id: {id}", id);
-            return ActionResult.Failed(e.Message);
-        }
-    }
-
-    public async Task<ActionResult> DeleteProvinceAsync(int id)
-    {
-        try
-        {
-            var result = await context.Provinces.Where(e => e.Id == id).ExecuteDeleteAsync();
-            if (result == 0)
-            {
-                return ActionResult.Failed("استان پیدا نشد");
-            }
-            return ActionResult.Completed();
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error while deleting province id: {id}", id);
-            return ActionResult.Failed(e.Message);
-        }
-    }
-
     public async Task<AddressDto> FindAddressAsync(string userId, int addressId)
     {
         try
         {
             var address = await context.Addresses
-                .Include(address => address.City)
-                .Include(address => address.Province)
                 .ProjectTo<AddressDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(x => x.Id == addressId && x.UserId == userId);
             if (address == null)
@@ -203,36 +119,6 @@ public class AddressRepo(ILogger<AddressRepo> logger,IMapper mapper,Context cont
             throw;
         }
     }
-    public async Task<List<ProviceDto>> GetProvinceAsync()
-    {
-        try
-        {
-            return await context.Provinces.AsNoTracking()
-                .ProjectTo<ProviceDto>(mapper.ConfigurationProvider)
-                .ToListAsync();
-        }
-        catch (Exception e)
-        {
-          logger.LogError(e,"error while getting provinces");
-            throw;
-        }
-    }
-
-    public async Task<List<CityDto>> GetCitiesAsync()
-    {
-        try
-        {
-            return await context.Cities.AsNoTracking()
-                .ProjectTo<CityDto>(mapper.ConfigurationProvider)
-                .ToListAsync();
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "error while getting cities");
-            throw;
-        }
-    }
-
     private async Task<Data_Layer.Entities.Address?> GetAddressByIdAsync(int id)
     {
         return await context.Addresses.FirstOrDefaultAsync(e => e.Id == id);

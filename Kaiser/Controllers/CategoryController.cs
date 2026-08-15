@@ -1,5 +1,5 @@
-﻿using Core_Layer.Dtos.Category;
-using Core_Layer.Repository.Category;
+﻿using Busines_Layer.Dtos.Category;
+using Busines_Layer.Repository.Category;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

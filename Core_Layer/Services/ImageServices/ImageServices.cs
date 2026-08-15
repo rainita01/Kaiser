@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace Core_Layer.Services.ImageServices;
+namespace Busines_Layer.Services.ImageServices;
 
 public class ImageServices(IWebHostEnvironment environment)
 {

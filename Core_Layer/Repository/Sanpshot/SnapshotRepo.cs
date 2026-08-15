@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using Core_Layer.Dtos.SnapShotDto;
+using Busines_Layer.Dtos.SnapShotDto;
 using Data_Layer.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Sanpshot;
+namespace Busines_Layer.Repository.Sanpshot;
 
 public class SnapshotRepo(Context context,ILogger<SnapshotRepo> logger,IMapper mapper) : ISnapshotRepo
 {

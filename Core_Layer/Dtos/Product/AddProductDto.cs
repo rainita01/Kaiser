@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.ImageDto;
+﻿using Busines_Layer.Dtos.ImageDto;
 using Microsoft.AspNetCore.Http;
 
-namespace Core_Layer.Dtos.Product;
+namespace Busines_Layer.Dtos.Product;
 
 public class AddProductDto
 {

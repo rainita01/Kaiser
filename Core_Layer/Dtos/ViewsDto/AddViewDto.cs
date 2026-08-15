@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.ViewsDto;
+﻿namespace Busines_Layer.Dtos.ViewsDto;
 
 public class AddViewDto
 {

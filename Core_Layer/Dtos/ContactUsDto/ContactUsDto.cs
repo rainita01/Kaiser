@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.ContactUsDto;
+﻿namespace Busines_Layer.Dtos.ContactUsDto;
 
 public class ContactUsDto
 {

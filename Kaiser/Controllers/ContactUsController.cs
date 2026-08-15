@@ -1,5 +1,5 @@
-﻿using Core_Layer.Dtos.ContactUsDto;
-using Core_Layer.Repository.ContactUs;
+﻿using Busines_Layer.Dtos.ContactUsDto;
+using Busines_Layer.Repository.ContactUs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

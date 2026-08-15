@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.Product;
+﻿namespace Busines_Layer.Dtos.Product;
 
 public class ProductCardDto
 {
@@ -19,5 +19,5 @@ public class ProductCardDto
 public record ProductPageDto
 {
     public List<ProductCardDto> ProductCards { get; set; }
-    public int PageCount { get; set; }
+    public double PageCount { get; set; }
 }

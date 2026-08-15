@@ -1,9 +1,10 @@
 ﻿using System.Security.AccessControl;
 
-namespace Core_Layer.Dtos.AddressDto;
+namespace Busines_Layer.Dtos.AddressDto;
 
 public class ProviceDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
+    public int province_code { get; set; }
+    public string province_name { get; set; }
+   
 }

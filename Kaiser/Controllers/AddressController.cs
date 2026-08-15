@@ -1,70 +1,27 @@
-﻿using Core_Layer.Dtos.AddressDto;
-using Core_Layer.Repository.Address;
+﻿using Busines_Layer.Dtos.AddressDto;
+using Busines_Layer.Repository.Address;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Busines_Layer.Services.Api.Postex;
 
 namespace Kaiser.Controllers;
 
-public class AddressController(IAddressRepo addressRepo) : ControllerBase
+public class AddressController(IAddressRepo addressRepo,IPostexServices postexServices) : ControllerBase
 {
-    [Authorize(Roles = "admin")]
-    [HttpPost("AddressManager/AddCity")]
-    public async Task<IActionResult> AddCity(string cityName,int provinceId)
-    {
-      var result =  await addressRepo.AddCityAsync(cityName,provinceId);
-      if (result.Success)
-      {
-          return Created();
-      }
-      return BadRequest(result.Message);
-    }
-    [Authorize(Roles = "admin")]
-    [HttpPost("AddressManager/AddProvince")]
-    public async Task<IActionResult> AddProvince(string provinceName)
-    {
-        var result = await addressRepo.AddProvinceAsync(provinceName);
-        if (result.Success)
-        {
-            return Created();
-        }
-        return BadRequest(result.Message);
-    }
-    [Authorize(Roles = "admin")]
-    [HttpDelete("AddressManager/DeleteProvince")]
-    public async Task<IActionResult> DeleteProvince(int id)
-    {
-        var result = await addressRepo.DeleteProvinceAsync(id);
-        if (result.Success)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Message);
-    }
-    [Authorize(Roles = "admin")]
-    [HttpDelete("AddressManager/DeleteCity")]
-    public async Task<IActionResult> DeleteCity(int id)
-    {
-        var result = await addressRepo.DeleteCityAsync(id);
-        if (result.Success)
-        {
-            return Ok();
-        }
-        return BadRequest(result.Message);
-    }
 
     [HttpGet("Address/GetProvince")]
     public async Task<IActionResult> GetProvinces()
     {
-        var result = await addressRepo.GetProvinceAsync();
+        var result = await postexServices.GetProvincesAsync();
         return Ok(result);
             
     }
-   
-    [HttpGet("Address/GetCities")]
-    public async Task<IActionResult> GetCities()
+    
+    [HttpGet("Address/GetProvinceCities")]
+    public async Task<IActionResult> GetProvinceCities(int provinceCode)
     {
-        var result = await addressRepo.GetCitiesAsync();
+        var result = await postexServices.GetCityByProvince(provinceCode);
         return Ok(result);
 
     }

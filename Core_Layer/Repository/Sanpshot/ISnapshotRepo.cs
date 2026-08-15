@@ -1,5 +1,6 @@
-﻿using Core_Layer.Dtos.SnapShotDto;
-namespace Core_Layer.Repository.Sanpshot;
+﻿using Busines_Layer.Dtos.SnapShotDto;
+
+namespace Busines_Layer.Repository.Sanpshot;
 
 public interface ISnapshotRepo
 {

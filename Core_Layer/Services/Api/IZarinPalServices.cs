@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.PaymentDto;
+﻿using Busines_Layer.Dtos.PaymentDto;
 
-namespace Core_Layer.Services.Api;
+namespace Busines_Layer.Services.Api;
 
 public interface IZarinPalServices
 {

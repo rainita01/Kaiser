@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.Product;
+﻿using Busines_Layer.Dtos.Product;
 
-namespace Core_Layer.Dtos.CartDto;
+namespace Busines_Layer.Dtos.CartDto;
 
 public class CartItemDto
 {

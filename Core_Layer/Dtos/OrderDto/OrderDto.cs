@@ -1,6 +1,6 @@
 ﻿
 
-namespace Core_Layer.Dtos.OrderDto;
+namespace Busines_Layer.Dtos.OrderDto;
 
 using AddressDto;
 using Data_Layer.Entities;

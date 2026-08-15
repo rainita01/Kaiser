@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Core_Layer.Dtos.Product;
+using Busines_Layer.Dtos.Product;
 using Data_Layer.Entities;
 
-namespace Core_Layer.Profiles;
+namespace Busines_Layer.Profiles;
 
 public class ProductProfile : Profile
 {

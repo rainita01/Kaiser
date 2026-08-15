@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.AddressDto;
+﻿using Busines_Layer.Dtos.AddressDto;
 
-namespace Core_Layer.Repository.Address;
+namespace Busines_Layer.Repository.Address;
 
 public interface IAddressRepo
 {
@@ -10,12 +10,6 @@ public interface IAddressRepo
     public Task<ActionResult> AddAddressToOrderAsync(AddAddressToOrderDto id);
     public Task<AddressDto> FindAddressAsync(string userId, int addressId);
     public Task<List<AddressDto>?> GetUserAddresses(string userId);
-    public Task<ActionResult> AddProvinceAsync(string name);
-    public Task<ActionResult> AddCityAsync(string name,int provinceId);
-    public Task<ActionResult> DeleteCityAsync(int id);
-    public Task<ActionResult> DeleteProvinceAsync(int id);
-    public Task<List<ProviceDto>> GetProvinceAsync();
-    public Task<List<CityDto>> GetCitiesAsync();
   
 
 }

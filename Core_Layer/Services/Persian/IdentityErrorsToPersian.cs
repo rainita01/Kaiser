@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Core_Layer.Services.Persian;
+namespace Busines_Layer.Services.Persian;
 
 public class IdentityErrorsToPersian : IdentityErrorDescriber
 {

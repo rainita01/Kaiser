@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.ImageDto;
+﻿namespace Busines_Layer.Dtos.ImageDto;
 
 public class ImageDto
 {

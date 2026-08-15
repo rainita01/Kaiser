@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.Category;
-using Core_Layer.Services.TextServices;
+using Busines_Layer.Dtos.Category;
+using Busines_Layer.Services.TextServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Category;
+namespace Busines_Layer.Repository.Category;
 
 public class CategoryRepo(ILogger<CategoryRepo> logger,Context context,IMapper mapper,TextServices textServices) :ICategoryRepo
 {

@@ -1,16 +1,16 @@
 ﻿
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.Product;
-using Core_Layer.Repository.Image;
-using Core_Layer.Repository.Visitors;
-using Core_Layer.Services.TextServices;
+using Busines_Layer.Dtos.Product;
+using Busines_Layer.Repository.Image;
+using Busines_Layer.Repository.Visitors;
+using Busines_Layer.Services.TextServices;
 using Data_Layer.Context;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Product;
+namespace Busines_Layer.Repository.Product;
 
 public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper mapper, IImageRepo imageRepo,IViewsRepo viewsRepo,TextServices textServices) : IProductRepo
 {
@@ -145,7 +145,7 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
 
             _ => query.OrderBy(e => e.Id)
         };
-        var count = query.Count() / actualPageSize;
+        var count =Math.Ceiling((double)query.Count() / actualPageSize) ;
         try
         {
             var items = await query

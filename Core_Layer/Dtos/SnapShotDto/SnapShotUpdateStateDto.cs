@@ -1,6 +1,6 @@
 ﻿using Data_Layer.Entities;
 
-namespace Core_Layer.Dtos.SnapShotDto;
+namespace Busines_Layer.Dtos.SnapShotDto;
 
 public class SnapShotUpdateStateDto
 {

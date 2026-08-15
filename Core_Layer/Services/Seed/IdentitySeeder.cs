@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Core_Layer.Services.Seed;
+namespace Busines_Layer.Services.Seed;
 
 public class IdentitySeeder
 {

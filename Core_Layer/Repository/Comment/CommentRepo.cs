@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.Comment;
+using Busines_Layer.Dtos.Comment;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Comment;
+namespace Busines_Layer.Repository.Comment;
 
 public class CommentRepo(ILogger<CommentRepo> logger,Context context,IMapper mapper) : ICommentRepo
 {

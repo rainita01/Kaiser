@@ -30,9 +30,6 @@ namespace Kaiser.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Firstname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -56,18 +53,25 @@ namespace Kaiser.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProvinceId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("city_code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("city_name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("province_code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("province_name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("ProvinceId");
 
                     b.HasIndex("UserId");
 
@@ -153,28 +157,6 @@ namespace Kaiser.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("Data_Layer.Entities.City", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProvinceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProvinceId");
-
-                    b.ToTable("Cities");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.Comment", b =>
@@ -405,6 +387,9 @@ namespace Kaiser.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BoxTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -419,6 +404,9 @@ namespace Kaiser.Migrations
                     b.Property<int>("DiscountPercent")
                         .HasColumnType("int");
 
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsBestSell")
                         .HasColumnType("bit");
 
@@ -428,6 +416,9 @@ namespace Kaiser.Migrations
                     b.Property<string>("KeyWords")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Length")
+                        .HasColumnType("int");
 
                     b.Property<string>("MetaDescription")
                         .IsRequired()
@@ -447,6 +438,12 @@ namespace Kaiser.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<long>("TotalWeight")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Width")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -482,23 +479,6 @@ namespace Kaiser.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductViews");
-                });
-
-            modelBuilder.Entity("Data_Layer.Entities.Province", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Provinces");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.Role", b =>
@@ -811,27 +791,11 @@ namespace Kaiser.Migrations
 
             modelBuilder.Entity("Data_Layer.Entities.Address", b =>
                 {
-                    b.HasOne("Data_Layer.Entities.City", "City")
-                        .WithMany("Addresses")
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Data_Layer.Entities.Province", "Province")
-                        .WithMany("Addresses")
-                        .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Data_Layer.Entities.User", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("City");
-
-                    b.Navigation("Province");
 
                     b.Navigation("User");
                 });
@@ -864,17 +828,6 @@ namespace Kaiser.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Data_Layer.Entities.City", b =>
-                {
-                    b.HasOne("Data_Layer.Entities.Province", "Province")
-                        .WithMany("Cities")
-                        .HasForeignKey("ProvinceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Province");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.Comment", b =>
@@ -1089,11 +1042,6 @@ namespace Kaiser.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Data_Layer.Entities.City", b =>
-                {
-                    b.Navigation("Addresses");
-                });
-
             modelBuilder.Entity("Data_Layer.Entities.Comment", b =>
                 {
                     b.Navigation("Replays");
@@ -1113,13 +1061,6 @@ namespace Kaiser.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("ProductViews");
-                });
-
-            modelBuilder.Entity("Data_Layer.Entities.Province", b =>
-                {
-                    b.Navigation("Addresses");
-
-                    b.Navigation("Cities");
                 });
 
             modelBuilder.Entity("Data_Layer.Entities.SnapShot", b =>

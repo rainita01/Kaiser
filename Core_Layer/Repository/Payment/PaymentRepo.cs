@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.PaymentDto;
+using Busines_Layer.Dtos.PaymentDto;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Payment;
+namespace Busines_Layer.Repository.Payment;
 
 public class PaymentRepo(IMapper mapper , Context context,ILogger<PaymentRepo> logger) : IPaymentRepo
 {

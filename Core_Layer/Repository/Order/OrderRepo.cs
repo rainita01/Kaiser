@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.OrderDto;
+using Busines_Layer.Dtos.OrderDto;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Order;
+namespace Busines_Layer.Repository.Order;
 
 public class OrderRepo(ILogger<OrderRepo> logger,Context context,IMapper mapper) : IOrderRepo
 {

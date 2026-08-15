@@ -1,14 +1,14 @@
 ﻿
 using AutoMapper;
-using Core_Layer.Dtos.ImageDto;
-using Core_Layer.Services.ImageServices;
+using Busines_Layer.Dtos.ImageDto;
+using Busines_Layer.Services.ImageServices;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Transaction = System.Transactions.Transaction;
 
-namespace Core_Layer.Repository.Image;
+namespace Busines_Layer.Repository.Image;
 
 public class ImageRepo(ILogger<ImageRepo> logger,Context context,ImageServices imageServices,IMapper mapper) : IImageRepo
 {

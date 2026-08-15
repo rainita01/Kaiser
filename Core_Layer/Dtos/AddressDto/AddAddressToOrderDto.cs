@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.AddressDto;
+﻿namespace Busines_Layer.Dtos.AddressDto;
 
 public class AddAddressToOrderDto
 {   

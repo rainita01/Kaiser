@@ -1,7 +1,7 @@
 ﻿using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core_Layer.Services.GetServices;
+namespace Busines_Layer.Services.GetServices;
 
 public class GetCountsServices(Context context) :IGetCountServices
 {

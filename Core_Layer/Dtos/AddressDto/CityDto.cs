@@ -1,8 +1,7 @@
-﻿namespace Core_Layer.Dtos.AddressDto;
+﻿namespace Busines_Layer.Dtos.AddressDto;
 
 public class CityDto
 {
-    public int Id { get; set; }
-    public int ProvinceId { get; set; } 
-    public string Name { get; set; }
+    public int city_code { get; set; }
+    public string city_name { get; set; }
 }

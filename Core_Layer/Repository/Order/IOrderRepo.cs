@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.OrderDto;
-using Core_Layer.Dtos.SnapShotDto;
+﻿using Busines_Layer.Dtos.OrderDto;
+using Busines_Layer.Dtos.SnapShotDto;
 
-namespace Core_Layer.Repository.Order;
+namespace Busines_Layer.Repository.Order;
 
 public interface IOrderRepo
 {

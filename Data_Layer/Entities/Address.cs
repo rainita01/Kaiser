@@ -11,30 +11,12 @@ public class Address : BaseEntity
 
     #region Relations
 
-    public int ProvinceId { get; set; }
-    public int CityId { get; set; }
-    public Province Province { get; set; }
-    public City City { get; set; }
+    public int province_code { get; set; }
+    public string province_name { get; set; }
+    public int city_code { get; set; }
+    public string city_name { get; set; }
     public string UserId { get; set; }
     public User User { get; set; }  
 
     #endregion
-}
-
-public class City
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public List<Address> Addresses { get; set; }
-    public int ProvinceId { get; set; }
-    public Province Province { get; set; }  
-}
-
-public class Province
-{
-    public int Id { get; set; }
-    public string  Name { get; set; }   
-
-    public List<City> Cities { get; set; }
-    public List<Address> Addresses { get; set; }   
 }

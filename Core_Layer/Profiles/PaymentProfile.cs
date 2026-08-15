@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Core_Layer.Dtos.PaymentDto;
+using Busines_Layer.Dtos.PaymentDto;
 using Data_Layer.Entities;
 
-namespace Core_Layer.Profiles;
+namespace Busines_Layer.Profiles;
 
 public class PaymentProfile :Profile
 {

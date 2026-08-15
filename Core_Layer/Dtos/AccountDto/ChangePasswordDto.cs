@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.AccountDto;
+﻿namespace Busines_Layer.Dtos.AccountDto;
 
 public class ChangePasswordDto
 {

@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.Category;
+﻿using Busines_Layer.Dtos.Category;
 
-namespace Core_Layer.Repository.Category;
+namespace Busines_Layer.Repository.Category;
 
 public interface ICategoryRepo
 {

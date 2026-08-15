@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.Comment;
+﻿namespace Busines_Layer.Dtos.Comment;
 
 public class ApproveOrDisApproveCommentDto
 {

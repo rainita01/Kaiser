@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
-using Core_Layer.Dtos.Comment;
-using Core_Layer.Repository.Comment;
+using Busines_Layer.Dtos.Comment;
+using Busines_Layer.Repository.Comment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

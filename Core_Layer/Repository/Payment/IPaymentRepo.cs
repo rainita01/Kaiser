@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.PaymentDto;
+﻿using Busines_Layer.Dtos.PaymentDto;
 
-namespace Core_Layer.Repository.Payment;
+namespace Busines_Layer.Repository.Payment;
 
 public interface IPaymentRepo
 {

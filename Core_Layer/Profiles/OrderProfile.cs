@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Core_Layer.Dtos.OrderDto;
-using Core_Layer.Dtos.SnapShotDto;
+using Busines_Layer.Dtos.OrderDto;
+using Busines_Layer.Dtos.SnapShotDto;
 using Data_Layer.Entities;
 
-namespace Core_Layer.Profiles;
+namespace Busines_Layer.Profiles;
 
 public class OrderProfile : Profile
 {

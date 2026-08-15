@@ -1,11 +1,11 @@
 ﻿
-using Core_Layer.Dtos.ViewsDto;
+using Busines_Layer.Dtos.ViewsDto;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Visitors;
+namespace Busines_Layer.Repository.Visitors;
 
 public class ViewRepo(ILogger<ViewRepo> logger,Context context) :IViewsRepo
 {

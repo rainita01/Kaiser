@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.ViewsDto;
+﻿using Busines_Layer.Dtos.ViewsDto;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Core_Layer.Repository.Visitors;
+namespace Busines_Layer.Repository.Visitors;
 
 public interface IViewsRepo
 {

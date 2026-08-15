@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core_Layer\Core_Layer.csproj" />
+    <ProjectReference Include="..\Core_Layer\Busines_Layer.csproj" />
     <ProjectReference Include="..\Data_Layer\Data_Layer.csproj" />
   </ItemGroup>
 

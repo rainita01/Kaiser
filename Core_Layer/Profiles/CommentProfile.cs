@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Core_Layer.Dtos.Comment;
+using Busines_Layer.Dtos.Comment;
 using Data_Layer.Entities;
 
-namespace Core_Layer.Profiles;
+namespace Busines_Layer.Profiles;
 
 public class CommentProfile : Profile
 {

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Data_Layer.Entities;
 
@@ -20,6 +21,15 @@ public class Product : BaseEntity
     public string KeyWords { get; set; }
     [Required]
     public long Price { get; set; }
+    public int Length { get; set; }
+
+    public int Width { get; set; }
+
+    public int Height { get; set; }
+
+    public long TotalWeight { get; set; }
+
+    public int BoxTypeId { get; set; }
     [Required]
     public int StockQuantity { get; set; }
     public int DiscountPercent { get; set; }

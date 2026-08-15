@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.CartDto;
+﻿using Busines_Layer.Dtos.CartDto;
 
-namespace Core_Layer.Repository.Cart;
+namespace Busines_Layer.Repository.Cart;
 
 public interface ICartRepo
 {

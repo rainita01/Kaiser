@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Services.Ghasedak;
+﻿namespace Busines_Layer.Services.Ghasedak;
 
 public interface ISmsServices
 {

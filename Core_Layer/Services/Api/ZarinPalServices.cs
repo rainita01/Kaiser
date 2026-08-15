@@ -1,8 +1,8 @@
-﻿using Core_Layer.Dtos.PaymentDto;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Busines_Layer.Dtos.PaymentDto;
 
-namespace Core_Layer.Services.Api;
+namespace Busines_Layer.Services.Api;
 
 public class ZarinPalServices(HttpClient httpClient) :IZarinPalServices
 {

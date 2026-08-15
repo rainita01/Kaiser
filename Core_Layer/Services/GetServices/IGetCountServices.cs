@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Services.GetServices;
+﻿namespace Busines_Layer.Services.GetServices;
 
 public interface IGetCountServices
 {

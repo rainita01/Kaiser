@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.ImageDto;
-using Core_Layer.Dtos.Product;
+﻿using Busines_Layer.Dtos.ImageDto;
+using Busines_Layer.Dtos.Product;
 
-namespace Core_Layer.Dtos.Category;
+namespace Busines_Layer.Dtos.Category;
 
 public class CategoryDto
 {

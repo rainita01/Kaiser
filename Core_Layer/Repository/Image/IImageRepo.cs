@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.ImageDto;
+﻿using Busines_Layer.Dtos.ImageDto;
 using Microsoft.AspNetCore.Http;
 
-namespace Core_Layer.Repository.Image;
+namespace Busines_Layer.Repository.Image;
 
 public interface IImageRepo
 {

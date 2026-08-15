@@ -1,5 +1,5 @@
 ﻿
-namespace Core_Layer.Dtos.OrderDto;
+namespace Busines_Layer.Dtos.OrderDto;
 
 public class OrderItemDto
 {

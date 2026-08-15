@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Azure;
-using Core_Layer.Dtos.PaymentDto;
-using Core_Layer.Repository.Address;
-using Core_Layer.Repository.Cart;
-using Core_Layer.Repository.Product;
-using Core_Layer.Repository.Sanpshot;
-using Core_Layer.Services.Api;
+using Busines_Layer.Dtos.PaymentDto;
+using Busines_Layer.Repository.Address;
+using Busines_Layer.Repository.Cart;
+using Busines_Layer.Repository.Product;
+using Busines_Layer.Repository.Sanpshot;
+using Busines_Layer.Services.Api;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 
-namespace Core_Layer.Services.CheckOut;
+namespace Busines_Layer.Services.CheckOut;
 
 public class CheckoutService(
     Context context,

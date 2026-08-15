@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Repository.Product;
+﻿namespace Busines_Layer.Repository.Product;
 
 public enum SortProduct
 {

@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Services.TextServices;
+﻿namespace Busines_Layer.Services.TextServices;
 
 public class TextServices
 {

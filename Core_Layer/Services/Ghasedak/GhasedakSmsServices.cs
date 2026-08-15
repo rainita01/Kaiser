@@ -1,6 +1,6 @@
 ﻿using GhasedakSms.Core.Dto;
 using Microsoft.Extensions.Options;
-namespace Core_Layer.Services.Ghasedak;
+namespace Busines_Layer.Services.Ghasedak;
 public class GhasedakSmsService : ISmsServices
 {
     private readonly GhasedakSms.Core.Ghasedak _client;

@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using Core_Layer.Dtos.CartDto;
-using Core_Layer.Dtos.Product;
+using Busines_Layer.Dtos.CartDto;
+using Busines_Layer.Dtos.Product;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.Cart;
+namespace Busines_Layer.Repository.Cart;
 
 public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :ICartRepo
 {

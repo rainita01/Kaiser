@@ -1,7 +1,7 @@
 ﻿
-using Core_Layer.Dtos.AccountDto;
-using Core_Layer.Repository.User;
-using Core_Layer.Services.Ghasedak;
+using Busines_Layer.Dtos.AccountDto;
+using Busines_Layer.Repository.User;
+using Busines_Layer.Services.Ghasedak;
 using Data_Layer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

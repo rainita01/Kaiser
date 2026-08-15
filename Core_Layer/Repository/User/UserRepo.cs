@@ -1,9 +1,9 @@
-﻿using Core_Layer.Dtos.AccountDto;
+﻿using Busines_Layer.Dtos.AccountDto;
 using Data_Layer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.User;
+namespace Busines_Layer.Repository.User;
 
 public class UserRepo(ILogger<UserRepo> logger,Context context) : IUserRepo
 {

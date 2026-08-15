@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.CartDto;
+﻿namespace Busines_Layer.Dtos.CartDto;
 
 public class RequestCartDto
 {

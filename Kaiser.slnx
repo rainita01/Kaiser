@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="Core_Layer/Core_Layer.csproj" Id="e7aff885-a20f-4b4d-afcd-60327861aa02" />
+  <Project Path="Core_Layer/Busines_Layer.csproj" Id="e7aff885-a20f-4b4d-afcd-60327861aa02" />
   <Project Path="Data_Layer/Data_Layer.csproj" Id="9703a041-046b-4b3d-af37-4321bbc2165f" />
   <Project Path="Kaiser/Kaiser.csproj" />
 </Solution>

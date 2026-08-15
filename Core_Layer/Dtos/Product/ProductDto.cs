@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.Comment;
-using Core_Layer.Dtos.ImageDto;
+﻿using Busines_Layer.Dtos.Comment;
+using Busines_Layer.Dtos.ImageDto;
 
-namespace Core_Layer.Dtos.Product;
+namespace Busines_Layer.Dtos.Product;
 
 public class ProductDto
 {

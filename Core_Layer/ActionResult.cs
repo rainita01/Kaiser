@@ -1,4 +1,4 @@
-﻿namespace Core_Layer;
+﻿namespace Busines_Layer;
 
 public class ActionResult
 {

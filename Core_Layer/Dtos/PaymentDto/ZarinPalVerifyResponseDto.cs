@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Core_Layer.Dtos.PaymentDto;
+namespace Busines_Layer.Dtos.PaymentDto;
 
 public class ZarinPalVerifyResponseDto
 {

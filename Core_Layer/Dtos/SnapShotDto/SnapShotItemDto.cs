@@ -1,4 +1,4 @@
-﻿namespace Core_Layer.Dtos.SnapShotDto;
+﻿namespace Busines_Layer.Dtos.SnapShotDto;
 
 public class SnapShotItemDto
 {

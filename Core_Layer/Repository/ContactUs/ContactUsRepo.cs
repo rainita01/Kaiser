@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core_Layer.Dtos.ContactUsDto;
+using Busines_Layer.Dtos.ContactUsDto;
 using Data_Layer.Context;
 using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Core_Layer.Repository.ContactUs;
+namespace Busines_Layer.Repository.ContactUs;
 
 public class ContactUsRepo(ILogger<ContactUsRepo> logger,Context context,IMapper mapper) : IContactUsRepo
 {

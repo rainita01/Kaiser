@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Core_Layer.Dtos.ImageDto;
+namespace Busines_Layer.Dtos.ImageDto;
 
 public class AddImageDto
 {

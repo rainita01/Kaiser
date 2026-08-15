@@ -1,7 +1,7 @@
-﻿using Core_Layer.Dtos.Product;
+﻿using Busines_Layer.Dtos.Product;
 using Data_Layer.Entities;
 
-namespace Core_Layer.Repository.Product;
+namespace Busines_Layer.Repository.Product;
 
 public interface IProductRepo
 {

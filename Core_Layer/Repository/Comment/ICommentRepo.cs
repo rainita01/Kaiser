@@ -1,6 +1,6 @@
-﻿using Core_Layer.Dtos.Comment;
+﻿using Busines_Layer.Dtos.Comment;
 
-namespace Core_Layer.Repository.Comment;
+namespace Busines_Layer.Repository.Comment;
 
 public interface ICommentRepo
 {
