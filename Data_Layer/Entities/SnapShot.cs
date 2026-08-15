@@ -3,8 +3,8 @@
 public class SnapShot
 {
     public Guid Id { get; set; }
-    public long ShippingCost { get; set; }
-    public long TotalPrice { get; set; }
+    public double ShippingCost { get; set; }
+    public double TotalPrice { get; set; }
     public SnapShotState State { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<SnapShotItem> Items { get; set; }

@@ -1,57 +1,72 @@
-﻿using System.Buffers;
-using System.IO.Pipelines;
+﻿
 using Busines_Layer.Dtos.AddressDto;
 using Busines_Layer.Dtos.Postex;
 using System.Net.Http.Json;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-
+using Microsoft.Extensions.Logging;
 
 namespace Busines_Layer.Services.Api.Postex;
 
-public class PostexServices(HttpClient client) :IPostexServices
+public class PostexServices(HttpClient client,ILogger<PostexServices> logger) :IPostexServices
 {
-    private string baseUrl = "https://api.postex.ir/api/v1/";
-    private string token = "postex_live_b872ae0b34YLPEbtAt2m7GQtqbE95REk8FMKdtSQ";
 
     public async Task<List<ProviceDto>?> GetProvincesAsync()
     {
-        var req = await client.GetAsync(baseUrl + "locality/provinces");
+        var req = await client.GetAsync( "locality/provinces");
         return await req.Content.ReadFromJsonAsync<List<ProviceDto>>();
     }
 
     public async Task<List<CityDto>?> GetAllCitiesAsync()
     {   
-        var req = await client.GetAsync(baseUrl + "locality/cities/all");
+        var req = await client.GetAsync( "locality/cities/all");
         return await req.Content.ReadFromJsonAsync<List<CityDto>>();
     }
 
     public async Task<List<CityDto>?> GetCityByProvince(int provinceCode)
     {
-        var req = await client.GetAsync(baseUrl + $"locality/cities/{provinceCode}");
+        var req = await client.GetAsync( $"locality/cities/{provinceCode}");
         return await req.Content.ReadFromJsonAsync<List<CityDto>>();
     }
 
-    public async Task<double?> CheckPrice(GetShippingQuotesQueryDto shippingDto)
+    public async Task<List<BoxDto>> GetBoxsInfo()
     {
-        client.DefaultRequestHeaders.Add("x-api-key", token);
+        var req = await client.GetAsync("common/boxes");
+        return await req.Content.ReadFromJsonAsync<List<BoxDto>>();
+
+    }
+    public async Task<double> CheckPrice(List<GetShippingQuotesQueryParcels> shippingDto)
+    {
         try
         {
-            var req = await client.PostAsJsonAsync(baseUrl + "shipping/quotes",shippingDto);
-            var response = await req.Content.ReadFromJsonAsync<ShippingQuotesResponse>();
+            var shipping = new GetShippingQuotesQueryDto
+            {
+                Parcels = shippingDto,
+                Courier = new Courier()
+                {
+                    ServiceType = "EXPRESS",
+                    CourierCode = "IR_POST"
+                },
+                CollectionType = "courier_drop_off",
+                FromCityCode = 266,
+                ValueAddedServices = new OptionalServices()
+                {
+                    RequestLabel = false,
+                    RequestPackaging = false,
+                    RequestSmsNotification = false,
+                }
+            };
 
-            var totalPrice = response?
-                .ShippingPrices
-                .FirstOrDefault()?
-                .ServicePrice
-                .FirstOrDefault()?
-                .TotalPrice;
-                return totalPrice;
+            var req = await client.PostAsJsonAsync("shipping/quotes",shipping);
+            var response = await req.Content.ReadFromJsonAsync<ShippingQuotesResponseDto>();
+            if (response == null)
+            {
+                logger.LogError("connection failed with getting shipping costs");
+                throw new HttpRequestException();
+            }
+            return response.ShippingPrice;
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            logger.LogError(ex,"exception while getting shipping costs");
             throw;
         }
     }

@@ -1,5 +1,4 @@
-﻿using Busines_Layer.Dtos.Comment;
-using Busines_Layer.Dtos.ImageDto;
+﻿
 
 namespace Busines_Layer.Dtos.Product;
 
@@ -18,6 +17,15 @@ public class ProductDto
     public long Views { get; set; }
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
+    public int Length { get; set; }
+
+    public int Width { get; set; }
+
+    public int Height { get; set; }
+
+    public long TotalWeight { get; set; }
+
+    public int BoxTypeId { get; set; }
     public List<ImageDto.ImageDto>? Images { get; set; }
     public DateTime CreateTime { get; set; }
 

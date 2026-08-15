@@ -14,6 +14,11 @@ public class AddProductDto
     public int CategoryId { get; set; }
     public int DiscountPercent { get; set; }
     public bool IsBestSell { get; set; }
+    public int Length { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public long TotalWeight { get; set; }
+    public int BoxTypeId { get; set; }
     public List<IFormFile>? Images { get; set; }
     public DateTime CreateTime { get; set; } = DateTime.Now;
 

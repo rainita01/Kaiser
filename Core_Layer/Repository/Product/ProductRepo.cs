@@ -24,7 +24,7 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
             model.Slug = textServices.GenerateSlug(dto.Name);
 
             await context.Products.AddAsync(model);
-            await context.SaveChangesAsync(); // model.Id ساخته شد
+            await context.SaveChangesAsync();
             if (dto.Images != null)
             {
                 foreach (var image in dto.Images)
@@ -69,6 +69,11 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
             product.IsBestSell = dto.IsBestSell ?? product.IsBestSell;
             product.Price = dto.Price ?? product.Price;
             product.StockQuantity = dto.StockQuantity ?? product.StockQuantity;
+            product.Length = dto.Length ?? product.Length;
+            product.BoxTypeId = dto.BoxTypeId ?? product.BoxTypeId;
+            product.Height = dto.Height ?? product.Height;
+            product.TotalWeight = dto.TotalWeight ?? product.TotalWeight;
+            product.Width = dto.Width ?? product.Width;
            
             await context.SaveChangesAsync();
             return ActionResult.Completed();
@@ -170,7 +175,6 @@ public class ProductRepo(ILogger<ProductRepo> logger,Context context,IMapper map
         actualPageSize = Math.Max(1, actualPageSize);
         actualPageNumber = Math.Max(1, actualPageNumber);
 
-        // جلوگیری از دریافت بیش از حد
         if (actualPageSize > 100) actualPageSize = 100;
 
         var query = context.Products

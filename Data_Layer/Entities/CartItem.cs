@@ -11,6 +11,7 @@ public class CartItem : BaseEntity
 
     public int CartId { get; set; }
     public Cart Cart { get; set; }
+
     public int ProductId { get; set; }
     [ForeignKey(nameof(ProductId))]
     public Product Product { get; set; }

@@ -153,6 +153,11 @@ public class CartRepo(ILogger<CartRepo> logger,Context context,IMapper mapper) :
                     Quantity = ci.Quantity,
                     ImageName = ci.Product.Images.FirstOrDefault().Name,
                     UserId = userId,
+                    BoxTypeId = ci.Product.BoxTypeId,
+                    Height = ci.Product.Height,
+                    Width = ci.Product.Width,
+                    Length = ci.Product.Length,
+                    TotalWeight = ci.Product.TotalWeight
                 }).ToListAsync();
         }
         catch (Exception e)

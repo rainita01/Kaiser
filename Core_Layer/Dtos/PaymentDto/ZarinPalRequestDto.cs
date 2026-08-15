@@ -8,7 +8,7 @@ public class ZarinPalRequestDto
     public string MerchantId { get; set; } = null!;
 
     [JsonPropertyName("amount")]
-    public long Amount { get; set; }
+    public double Amount { get; set; }
 
     [JsonPropertyName("currency")]
     public string? Currency { get; set; } = "IRR";

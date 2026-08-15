@@ -11,5 +11,14 @@ public class CartItemDto
     public string ImageName { get; set; }
     public long Price { get; set; }
     public int Quantity { get; set; }
+    public int Length { get; set; }
+
+    public int Width { get; set; }
+
+    public int Height { get; set; }
+
+    public long TotalWeight { get; set; }
+
+    public int BoxTypeId { get; set; }
     public int DiscountPercent { get; set; }
 }

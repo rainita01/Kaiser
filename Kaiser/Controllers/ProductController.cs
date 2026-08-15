@@ -6,13 +6,14 @@ using Busines_Layer.Dtos.ViewsDto;
 using Busines_Layer.Repository.Image;
 using Busines_Layer.Repository.Product;
 using Busines_Layer.Repository.Visitors;
+using Busines_Layer.Services.Api.Postex;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kaiser.Controllers;
 
 [ApiController]
-public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, IImageRepo imageRepo)
+public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, IImageRepo imageRepo,IPostexServices postexServices)
     : ControllerBase
 {
     [HttpGet("Products")]
@@ -142,8 +143,12 @@ public class ProductController(IProductRepo productRepo, IViewsRepo viewsRepo, I
 
         return BadRequest(result.Message);
     }
-
-   
+    [HttpGet("GetBoxInfo")]
+    public async Task<IActionResult> GetBoxesInfo()
+    {
+        var boxes =await postexServices.GetBoxsInfo();
+        return Ok(boxes);
+    }
 
  
 

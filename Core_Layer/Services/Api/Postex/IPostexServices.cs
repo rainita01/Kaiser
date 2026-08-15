@@ -8,5 +8,6 @@ public interface IPostexServices
     Task<List<ProviceDto>?> GetProvincesAsync();
     Task<List<CityDto>?> GetAllCitiesAsync();
     Task<List<CityDto>?> GetCityByProvince(int provinceCode);
-    Task<double?> CheckPrice(GetShippingQuotesQueryDto shippingDto);
+    Task<double> CheckPrice(List<GetShippingQuotesQueryParcels> shippingDto);
+     Task<List<BoxDto>> GetBoxsInfo();
 }

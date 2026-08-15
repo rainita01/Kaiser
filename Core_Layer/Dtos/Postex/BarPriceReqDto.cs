@@ -68,18 +68,101 @@ public class ParcelPropertyDto
     [JsonPropertyName("total_value")]
     public double TotalValue { get; set; }
 }
-
-public class ShippingQuotesResponse
+public class ShippingQuotesResponseDto
 {
-    public List<ShippingPrice> ShippingPrices { get; set; } = new();
+    [JsonPropertyName("parcel_count")]
+    public int ParcelCount { get; set; }
+
+    [JsonPropertyName("currency")]
+    public string Currency { get; set; } = null!;
+
+    [JsonPropertyName("pickup_price")]
+    public double PickupPrice { get; set; }
+
+    [JsonPropertyName("shipping_price")]
+    public double ShippingPrice { get; set; }
+
+    [JsonPropertyName("shipping_price_vat")]
+    public double ShippingPriceVat { get; set; }
+
+    [JsonPropertyName("value_added_service_price")]
+    public double ValueAddedServicePrice { get; set; }
+
+    [JsonPropertyName("total_cost")]
+    public double TotalCost { get; set; }
+
+    [JsonPropertyName("shipping_prices")]
+    public List<ShippingPriceDto> ShippingPrices { get; set; } = new();
+
+    [JsonPropertyName("excluded_services")]
+    public Dictionary<string, object> ExcludedServices { get; set; } = new();
+
+    [JsonPropertyName("shipping_price_discount")]
+    public double ShippingPriceDiscount { get; set; }
 }
 
-public class ShippingPrice
+public class ShippingPriceDto
 {
-    public List<ServicePrice> ServicePrice { get; set; } = new();
+    [JsonPropertyName("to_city_name")]
+    public string ToCityName { get; set; } = null!;
+
+    [JsonPropertyName("shipping_price")]
+    public double ShippingPrice { get; set; }
+
+    [JsonPropertyName("shipping_price_vat")]
+    public double ShippingPriceVat { get; set; }
+
+    [JsonPropertyName("total_shipping_price")]
+    public double TotalShippingPrice { get; set; }
+
+    [JsonPropertyName("estimated_delivery")]
+    public string EstimatedDelivery { get; set; } = null!;
+
+    [JsonPropertyName("service_price")]
+    public List<ServicePriceDto> ServicePrice { get; set; } = new();
+
+    [JsonPropertyName("value_added_service_price")]
+    public Dictionary<string, object> ValueAddedServicePrice { get; set; } = new();
 }
 
-public class ServicePrice
+public class ServicePriceDto
 {
+    [JsonPropertyName("courierLogo")]
+    public string CourierLogo { get; set; } = null!;
+
+    [JsonPropertyName("courierName")]
+    public string CourierName { get; set; } = null!;
+
+    [JsonPropertyName("courierCode")]
+    public string CourierCode { get; set; } = null!;
+
+    [JsonPropertyName("courierNameAlias")]
+    public string CourierNameAlias { get; set; } = null!;
+
+    [JsonPropertyName("courierCodeAlias")]
+    public string CourierCodeAlias { get; set; } = null!;
+
+    [JsonPropertyName("serviceType")]
+    public string ServiceType { get; set; } = null!;
+
+    [JsonPropertyName("serviceName")]
+    public string ServiceName { get; set; } = null!;
+
+    [JsonPropertyName("slaDays")]
+    public string SlaDays { get; set; } = null!;
+
+    [JsonPropertyName("slaHours")]
+    public int SlaHours { get; set; }
+
+    [JsonPropertyName("vat")]
+    public double Vat { get; set; }
+
+    [JsonPropertyName("discountAmount")]
+    public double DiscountAmount { get; set; }
+
+    [JsonPropertyName("totalPrice")]
     public double TotalPrice { get; set; }
+
+    [JsonPropertyName("initPrice")]
+    public double InitPrice { get; set; }
 }

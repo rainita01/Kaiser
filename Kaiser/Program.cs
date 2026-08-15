@@ -71,9 +71,10 @@ builder.Services.AddScoped<ImageServices>();
 builder.Services.AddScoped<TextServices>();
 builder.Services.AddScoped<ICheckOutServices, CheckoutService>();
 builder.Services.Configure<GhasedakOption>(builder.Configuration.GetSection("Ghasedak"));
+builder.Services.Configure<PostexOptions>(builder.Configuration.GetSection("Postex"));
 builder.Services.AddScoped<ISmsServices, GhasedakSmsService>();
 builder.Services.AddScoped<IGetCountServices, GetCountsServices>();
-builder.Services.AddHttpClient<IPostexServices, PostexServices>();
+
 
 #endregion
 #region Repositories
@@ -102,7 +103,8 @@ builder.Services.AddAutoMapper(mapp =>
     mapp.AddProfile<AddressProfile>();
     mapp.AddProfile<ContactUsProfile>();
     mapp.AddProfile<CommentProfile>();
-    mapp.AddProfile<CartAndSnapShotProfile>();
+    mapp.AddProfile<SnapShotProfile>();
+    mapp.AddProfile<CartProfile>();
     mapp.AddProfile<OrderProfile>();
     mapp.AddProfile<PaymentProfile>();
 });
@@ -111,6 +113,14 @@ builder.Services.AddAutoMapper(mapp =>
 builder.Services.Configure<PaymentOption>(
     builder.Configuration.GetSection("Payment"));
 
+#region Httpclients
+builder.Services.AddHttpClient<IPostexServices, PostexServices>(((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<PostexOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl);
+    client.DefaultRequestHeaders.Add("x-api-key", options.ApiKey);
+
+}));
 builder.Services.AddHttpClient<IZarinPalServices, ZarinPalServices>((serviceProvider, client) =>
 {
     var options = serviceProvider
@@ -119,6 +129,10 @@ builder.Services.AddHttpClient<IZarinPalServices, ZarinPalServices>((serviceProv
 
     client.BaseAddress = new Uri(options.BaseUrl);
 });
+
+
+#endregion
+
 
 builder.Services.AddIdentity<User, Role>(option =>
     {
