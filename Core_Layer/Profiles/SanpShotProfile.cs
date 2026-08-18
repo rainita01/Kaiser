@@ -31,12 +31,16 @@ public class SnapShotProfile : Profile
             .ForMember(e => e.Id, s => s.Ignore())
             .ForMember(e => e.ProductId, s => s.MapFrom(e => e.ProductId))
             .ForMember(e => e.ProductName, s => s.MapFrom(e => e.Name))
-            .ForMember(e => e.SnapShotId, s => s.Ignore());
+            .ForMember(e => e.SnapShotId, s => s.Ignore())
+            .ForMember(e=>e.UnitPrice,s=>s.MapFrom(q=>q.Price))
+            .ForMember(e=>e.SnapShot,s=>s.Ignore())
+            ;
         CreateMap<SnapShotDto, SnapShot>()
             .ForMember(e => e.User, s => s.Ignore());
         CreateMap<SnapShotItemDto, SnapShotItem>()
             .ForMember(e => e.SnapShot, s => s.Ignore());
         CreateMap<SnapShot, SnapShotDto>();
+        CreateMap<SnapShotItem, SnapShotItemDto>();
 
     }
 }

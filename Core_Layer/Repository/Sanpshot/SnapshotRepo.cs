@@ -36,6 +36,6 @@ public class SnapshotRepo(Context context,ILogger<SnapshotRepo> logger,IMapper m
 
     public async Task<SnapShotDto?> GetAsync(string authority)
     {
-        return mapper.Map<SnapShotDto>(await context.SnapShots.FirstOrDefaultAsync(e => e.Authority == authority));
+        return mapper.Map<SnapShotDto>(await context.SnapShots.Include(e=>e.Items).FirstOrDefaultAsync(e => e.Authority == authority));
     }
 }

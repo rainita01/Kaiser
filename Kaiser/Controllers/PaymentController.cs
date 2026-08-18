@@ -15,21 +15,19 @@ public class PaymentController(ICheckOutServices checkOutServices) : ControllerB
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized();
-
-            var checkout =await checkOutServices.CheckOutAsync(userId, addressId);
-
+            var checkout = await checkOutServices.CheckOutAsync(userId, addressId);
             return Ok(new
             { 
-                checkout.ShippingPrice,
-                checkout.ProductsPrice,
-                checkout.TotalPrice
+                checkout.ShippingPrice, checkout.ProductsPrice, checkout.TotalPrice
             });
+          
+          
+
+         
         }
 
         [HttpGet("Payment/Callback")]
-        public async Task<IActionResult> PaymentCallback(
-            [FromQuery]string authority,
-            [FromQuery]string status)
+        public async Task<IActionResult> PaymentCallback([FromQuery]string authority, [FromQuery]string status)
         {
         var result = await checkOutServices.HandleCallbackAsync(authority, status);
         if (result.Success)
@@ -42,17 +40,20 @@ public class PaymentController(ICheckOutServices checkOutServices) : ControllerB
         [HttpPost("Purchase")]
         public async Task<IActionResult> Purchase([FromBody] int addressId)
         {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-            return Unauthorized();
-        var authority = await checkOutServices.PurchaseAsync(userId, addressId);
+           
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null)
+                    return Unauthorized();
+                var authority = await checkOutServices.PurchaseAsync(userId, addressId);
 
-        return Ok(new
-        {
-            url = $"https://sandbox.zarinpal.com/pg/StartPay/{authority}"
-        });
+                return Ok(new
+                {
+                    url = $"https://sandbox.zarinpal.com/pg/StartPay/{authority}"
+                });
 
-    }
+          
+
+        }
 
 
 }

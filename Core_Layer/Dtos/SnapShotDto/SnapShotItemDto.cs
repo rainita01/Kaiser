@@ -10,7 +10,8 @@ public class SnapShotItemDto
     public long UnitPrice { get; set; }
 
     public int Count { get; set; }
-    public decimal TotalPrice => UnitPrice * (1 - Discount / 100m) * Count;
     public decimal Discount { get; set; }
+    public decimal TotalPrice => UnitPrice * (1 - Discount / 100m) * Count;
+ 
     public Guid SnapShotId { get; set; }
 }

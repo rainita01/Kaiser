@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="Dtos\GhasedakDto\" />
-    <Folder Include="Middlewares\" />
     <Folder Include="Services\ImageServices\" />
     <Folder Include="Services\TextServices\" />
     <Folder Include="Services\Persian\" />

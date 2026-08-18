@@ -19,6 +19,5 @@ public class OrderItemDto
 
     public int Quantity { get; set; }
 
-    public long TotalPrice =>
-        (long)(UnitPrice * (1 - Discount / 100m) * Quantity);
+    public long TotalPrice => (long)(UnitPrice * (1 - Discount / 100m) * Quantity);
 }

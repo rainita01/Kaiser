@@ -1,5 +1,4 @@
 ﻿using Busines_Layer.Dtos.PaymentDto;
-using Busines_Layer.Middlewares;
 using Busines_Layer.Profiles;
 using Busines_Layer.Repository.Address;
 using Busines_Layer.Repository.Cart;
@@ -13,6 +12,7 @@ using Busines_Layer.Repository.Product;
 using Busines_Layer.Repository.Sanpshot;
 using Busines_Layer.Repository.User;
 using Busines_Layer.Repository.Visitors;
+using Busines_Layer.Services;
 using Busines_Layer.Services.Api;
 using Busines_Layer.Services.Api.Postex;
 using Busines_Layer.Services.CheckOut;
