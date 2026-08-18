@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using Busines_Layer.Dtos.OrderDto;
 using Data_Layer.Context;
+using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -84,5 +85,20 @@ public class OrderRepo(ILogger<OrderRepo> logger,Context context,IMapper mapper)
             return ActionResult.Failed(e.Message);
         }
 
+    }
+
+    public async Task<OrderDto> ChangeStateAsync(OrderState state, int orderId)
+    {
+        var order = await context.Orders.FindAsync(orderId);
+        if (order == null)
+        {
+            logger.LogWarning("order: {id} not found",orderId);
+            throw new InvalidOperationException("سفارش پیدا نشد");
+        }
+
+        order.State = state;
+        await context.SaveChangesAsync();
+        logger.LogInformation("order: {id} state changed to {state}",orderId,state);
+        return mapper.Map<OrderDto>(order);
     }
 }

@@ -32,7 +32,12 @@ public class PaymentController(ICheckOutServices checkOutServices) : ControllerB
             [FromQuery]string status)
         {
         var result = await checkOutServices.HandleCallbackAsync(authority, status);
-         return Ok(result);
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+
+        return BadRequest(result.Message);
         }
         [HttpPost("Purchase")]
         public async Task<IActionResult> Purchase([FromBody] int addressId)

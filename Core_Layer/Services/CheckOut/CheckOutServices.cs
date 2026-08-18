@@ -13,8 +13,6 @@ using Data_Layer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Timer = System.Timers.Timer;
-
 
 namespace Busines_Layer.Services.CheckOut;
 
@@ -31,7 +29,6 @@ public class CheckoutService(
     IPostexServices postexServices
     ) : ICheckOutServices
 {
-    private ICheckOutServices _checkOutServicesImplementation;
 
     public async Task<CheckoutDto> CheckOutAsync(string userId, int addressId)
     {

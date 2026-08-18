@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Busines_Layer.Repository.Order;
+using Data_Layer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,5 +39,12 @@ public class OrderController(IOrderRepo orderRepo) : ControllerBase
         }
 
         return BadRequest(result.Message);
+    }
+    [Authorize(Roles = "admin")]
+    [HttpPut("OrderManager/ChangeState")]
+    public async Task<IActionResult> ChangeState(OrderState state, int orderId)
+    {
+        var result = await orderRepo.ChangeStateAsync(state, orderId);
+        return Ok(result);
     }
 }
