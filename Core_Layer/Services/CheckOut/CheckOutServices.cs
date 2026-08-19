@@ -133,6 +133,7 @@ public class CheckoutService(
             var order = mapper.Map<Order>(snapshot);
 
             order.PaymentId = payment.Id;
+            order.State = OrderState.Paid;
             await context.Orders.AddAsync(order);
             payment.State = PaymentState.Succeeded;
             payment.VerifiedAt = DateTime.UtcNow;
